@@ -1,0 +1,47 @@
+[user]
+	name = Timo Reimann
+[core]
+	excludesfile = ~/.gitignore
+	editor = vim
+	pager = less -F -X
+[branch]
+	autosetuprebase = always
+[rebase]
+	autosquash = true
+[alias]
+	co = checkout
+	st = status
+	stu = status -uno
+	dc = diff --cached
+	logshort = log --oneline --decorate
+	logfiles = log --name-status
+	showfiles = show --pretty="format:" --name-only
+	showstatus = show --pretty="format:" --name-status
+	ci = commit
+	ci-amend = commit --amend
+	ci-same-msg = commit --amend --no-edit
+	ci-all-same-msg = commit -a --amend --no-edit
+	copr = "!f() { repo=origin; [[ $# -eq 2 ]] && repo=$1 && shift ; git fetch $repo pull/$1/head:pr-$1 && git checkout pr-$1;}; f"
+	#copr = "!f() { git fetch origin pull/$1/head:pr-$1 && git checkout pr-$1;}; f"
+	cp = cherry-pick
+	br = branch
+	pr = pull-request
+	prb = pull --rebase
+	push-force = push --force-with-lease
+	squash-branch = "!f() { git reset --soft $1^ && git commit -C $1; }; f"
+	tag-delete = tag --delete
+	tag-delete-remote = push --delete origin
+	rb = rebase
+	rbi = rebase --interactive
+	rbc = rebase --continue
+	rba = rebase --abort
+	recent-branches = git-recent-branches
+	inject = "!f() { set -e; HASH=`git show $1 --pretty=format:\"%H\" -q`; shift; git commit -m \"fixup! $HASH\" $*; [ -n \"$(git diff-files)\" ] && git stash && DIRTY=1; git rebase $HASH^^ -i --autosquash; [ -n \"$DIRTY\" ] && git stash pop;}; f"
+[rerere]
+	enabled = true
+[fetch]
+	prune = true
+[branch "master"]
+	rebase = true
+[remote "origin"]
+	prune = true
