@@ -62,7 +62,7 @@ setopt HIST_IGNORE_SPACE
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(brew docker git git-extras go kubectl sbt wd)
+plugins=(brew docker git git-extras go kubectl wd)
 
 source $ZSH/oh-my-zsh.sh
 
