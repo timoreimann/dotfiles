@@ -1,5 +1,8 @@
+# Define GOPATH first for reusage in PATH.
+export GOPATH=~/development/go
+
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/Development/go/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:~/Development/repos/hc/latest/cloud-os-images/common/bin:$PATH
+export PATH="$PATH:~/bin:$GOPATH/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin"
 
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 
