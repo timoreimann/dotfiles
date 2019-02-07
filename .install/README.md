@@ -18,3 +18,4 @@ Steps:
 - enable [_Natural Text Editing_](https://apple.stackexchange.com/a/293988) in iterm2
 - max window with cmd+f: install Spectacle and configure
 - clip board: install CopyClip (Mac app)
+- TODO: [delve installation](https://github.com/go-delve/delve/blob/master/Documentation/installation/osx/install.md)
