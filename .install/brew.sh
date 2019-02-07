@@ -1,4 +1,4 @@
-echo "please install the following packages where needed:"
+echo "please install some or all of the following packages as needed:"
 
 cat <<EOF
 asciidoc
@@ -12,6 +12,7 @@ c-ares
 camlp4
 clasp
 clingo
+clipy (brew cask install clipy)
 cloc
 cmake
 coreutils
@@ -21,7 +22,6 @@ delve
 dep
 dive
 docbook
-docker
 docker-compose
 docker-machine
 docker-machine-driver-xhyve
@@ -33,7 +33,7 @@ fdupes
 findutils
 fontconfig
 freetype
-fzf
+fzf (followed by $(brew --prefix)/opt/fzf/install)
 gawk
 gd
 gdbm
@@ -56,6 +56,7 @@ httpie
 httrack
 hugo
 icu4c
+iterm2
 jpeg
 jq
 k8sec
