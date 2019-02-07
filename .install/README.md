@@ -15,5 +15,6 @@ Steps:
 - restore vscode settings via [Settings Sync](https://marketplace.visualstudio.com/items?itemName=Shan.code-settings-sync)
 - install the [vscode CLI integration](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line) (Shift+Command+P --> `shell command`)
 - [install Solarized Dark theme + Powerline fonts for iterm2](https://gist.github.com/kevin-smets/8568070) (to be used with "agnoster" zsh theme)
+- enable [_Natural Text Editing_](https://apple.stackexchange.com/a/293988) in iterm2
 - max window with cmd+f: install Spectacle and configure
 - clip board: install CopyClip (Mac app)
