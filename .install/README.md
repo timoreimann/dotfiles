@@ -7,10 +7,13 @@ Steps:
 - pull in timoreimann/secrets
 - copy SSH keys from timoreimann/secrets to $HOME/.ssh
 - import base SSH configuration
+- [install oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh#basic-installation)
 - cherry-pick from .zshrc
+- always allow application installations from unidentified developers (works in Mojave): `sudo spctl --master-disable` (check _Security & Privacy_ afterwards to be sure)
 - install brew packages via brew.sh
-- Terminal: install Solarized Dark theme + Powerline fonts (to be used with "agnoster" zsh theme
+- install non-brew applications: Visual Studio Code (vscode), Docker for Mac
+- restore vscode settings via [Settings Sync](https://marketplace.visualstudio.com/items?itemName=Shan.code-settings-sync)
+- install the [vscode CLI integration](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line) (Shift+Command+P --> `shell command`)
+- [install Solarized Dark theme + Powerline fonts for iterm2](https://gist.github.com/kevin-smets/8568070) (to be used with "agnoster" zsh theme)
 - max window with cmd+f: install Spectacle and configure
-- non-breaking white space (pipe in shell + "not found" problem): Install Karabiner (Elements) -> Settings -> Complex Modifications -> Add Rule -> Import More Rules... -> Change alt+spacebar to spacebar -> click "Enable"
 - clip board: install CopyClip (Mac app)
-- Java: install via brew
