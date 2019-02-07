@@ -1,5 +1,6 @@
 [user]
 	name = Timo Reimann
+	email = treimann@digitalocean.com
 [core]
 	excludesfile = ~/.gitignore
 	editor = vim
