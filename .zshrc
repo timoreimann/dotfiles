@@ -2,7 +2,7 @@
 export GOPATH=~/development/go
 
 # If you come from bash you might have to change your $PATH.
-export PATH="$PATH:~/bin:$GOPATH/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin"
+export PATH="$PATH:$HOME/bin:$GOPATH/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin"
 
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 
