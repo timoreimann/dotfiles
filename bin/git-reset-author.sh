@@ -4,13 +4,20 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-# XXX To be set.
-readonly WORK_EMAIL=
-readonly PRIVATE_EMAIL=
+readonly EMAILS_FILE="${HOME}/.secrets/emails"
 
 usage() {
   echo "usage: $(basename "$0") work|private|<email address>" >&2
 }
+
+if [[ ! -f "${EMAILS_FILE}" ]]; then
+  echo "file \"${EMAILS_FILE}\" containing email addresses does not exist" >&2
+fi
+
+source "${EMAILS_FILE}"
+
+readonly WORK_EMAIL
+readonly PRIVATE_EMAIL
 
 if [[ -z ${WORK_EMAIL:-} ]]; then
   echo "environment variable WORK_EMAIL must be set" >&2
