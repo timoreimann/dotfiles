@@ -1,0 +1,7 @@
+.DS_Store
+**/debug.test
+**/.idea/
+**/.vscode/
+.envrc
+.autoenv.zsh
+.autoenv_leave.zsh

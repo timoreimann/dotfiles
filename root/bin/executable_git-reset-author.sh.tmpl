@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+DEFAULT_EMAIL_ADDRESS={{ .email | quote }}
+
+usage() {
+  echo "usage: $(basename "$0") [<email address>]" >&2
+}
+
+case "${1:-}" in
+  -h|--help)
+    usage
+    exit 1
+    ;;
+  *)
+    email_address="${1:-$DEFAULT_EMAIL_ADDRESS}"
+    ;;
+esac
+readonly email_address
+
+echo "resetting author information of HEAD to ${email_address}"
+AUTHOR="${email_address}" GIT_AUTHOR_EMAIL="${email_address}" GIT_COMMITTER_EMAIL="${email_address}" git ci-amend --allow-empty -C HEAD --reset-author

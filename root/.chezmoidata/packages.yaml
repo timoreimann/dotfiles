@@ -1,0 +1,45 @@
+packages:
+  taps:
+    #- homebrew/bundle
+    - humanlogio/homebrew-tap
+  brews:
+    - bash
+    - bash-completion
+    - bash-git-prompt
+    - bat
+    - coreutils
+    - direnv
+    - fd
+    - fzf
+    - gh
+    - git
+    - git-delta
+    - git-extras
+    - git-filter-repo
+    - gnu-tar
+    - go
+    - python3
+    - grep
+    - humanlog
+    - jq
+    - mosh
+    - netcat
+    - npm
+    - pwgen
+    - ripgrep
+    - shellcheck
+    - starship
+    - tcptraceroute
+    - telnet
+    - tree
+    - vim
+    - watch
+    - wget
+    - yq
+    - zsh
+  casks:
+    - clipy
+    - eurkey
+    - font-fira-code-nerd-font
+    - iterm2
+    - spectacle

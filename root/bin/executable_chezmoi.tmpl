@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+##
+## chezmoi wrapper adding the following functionality:
+##
+##  - selection of a sub-directoried chezmoi source
+##  - detection and usage of source from current directory
+##  - fallback to vanilla chezmoi if default source path exists
+##
+set -o errexit
+set -o nounset
+set -o pipefail
+
+shopt -s nullglob
+
+readonly CHEZMOI_BIN="{{ output "brew" "--prefix" | trim}}/bin/chezmoi"
+readonly SOURCE_PATH_COMMON="${HOME}/.local/share/chezmoi"
+
+create_source_path() {
+    local _source="$1"
+    echo "${SOURCE_PATH_COMMON}/${_source}"
+}
+
+# Discover sources below the default chezmoi source path as directory.
+declare -a sources=()
+if [[ ! -d "${SOURCE_PATH_COMMON}/.git" ]]; then
+    for source in "${SOURCE_PATH_COMMON}"/*; do
+        if [[ ! -d "${source}" ]]; then continue; fi
+        source="$(basename "${source}")"
+        sources+=("${source}")
+    done
+fi
+
+usage() {
+    echo "usage: $(basename "$0") [-s [${sources[*]}]]"
+    exit
+}
+
+while getopts ":s:" opt; do
+    case "${opt}" in
+        s)
+            source_arg="${OPTARG}"
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [[ "${source_arg:-}" ]]; then
+    # Invoke chezmoi with given source (if it exists).
+    for source in "${sources[@]}"; do
+        if [[ "${source_arg}" == "${source}" ]]; then
+            source_path="$(create_source_path "${source}")"
+            exec "${CHEZMOI_BIN}" --source "${source_path}" "$@"
+        fi
+    done
+
+    echo "Unknown source: ${source_arg}" >&2
+    usage >&2
+    exit 1
+fi
+
+# Fall back to vanilla chezmoi if default source path exists.
+if [[ -d "${SOURCE_PATH_COMMON}/.git" ]]; then
+    exec "${CHEZMOI_BIN}" "$@"
+fi
+
+# Detect if the PWD is below a source path. If so, invoke chezmoi on it.
+pwd="${PWD}"
+for source in "${sources[@]}"; do
+    source_path="$(create_source_path "${source}")"
+    if [[ "${pwd}/" = "${source_path}/"* ]]; then
+        exec "${CHEZMOI_BIN}" --source "${source_path}" "$@"
+    fi
+done
+
+echo 'Source could not be detected automatically' >&2
+usage >&2
+exit 1

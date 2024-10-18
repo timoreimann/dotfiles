@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+go install github.com/gottwald/git-sweep@86af0096c67f46922d1e584b8c4e81b1454a02bf

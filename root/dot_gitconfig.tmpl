@@ -1,0 +1,71 @@
+[user]
+	name = Timo Reimann
+	email = {{ .email | quote }}
+[core]
+	excludesfile = ~/.gitignore
+	editor = vim
+	pager = less -F -X
+[branch]
+	autosetuprebase = always
+[rebase]
+	autosquash = true
+[alias]
+	co = checkout
+	st = status
+	stu = status -uno
+	dc = diff --cached
+	logshort = log --oneline --decorate
+	logfiles = log --name-status
+	showfiles = show --pretty="format:" --name-only
+	showstatus = show --pretty="format:" --name-status
+	ci = commit
+	ci-amend = commit --amend
+	ci-same-msg = commit --amend --no-edit
+	ci-all-same-msg = commit -a --amend --no-edit
+	copr = "!f() { repo=origin; [[ $# -eq 2 ]] && repo=$1 && shift ; git fetch $repo pull/$1/head:pr-$1 && git checkout pr-$1;}; f"
+	#copr = "!f() { git fetch origin pull/$1/head:pr-$1 && git checkout pr-$1;}; f"
+	cp = cherry-pick
+	current-branch = rev-parse --abbrev-ref HEAD
+	br = branch
+	inject = "!f() { set -e; HASH=`git show $1 --pretty=format:\"%H\" -q`; shift; git commit -m \"fixup! $HASH\" $*; [ -n \"$(git diff-files)\" ] && git stash && DIRTY=1; git rebase $HASH^^ -i --autosquash; [ -n \"$DIRTY\" ] && git stash pop;}; f"
+	pr = pull-request
+	prb = pull --rebase
+	push-force = push --force-with-lease
+	squash-branch = "!f() { git reset --soft $1^ && git commit -C $1; }; f"
+	# Use the following together with: -m "<commit message>"
+	squash-all = "!f(){ git reset $(git commit-tree \"HEAD^{tree}\" \"$@\");};f"
+	tag-delete = tag --delete
+	tag-delete-remote = push --delete origin
+	rb = rebase
+	rbi = rebase --interactive
+	rbc = rebase --continue
+	rba = rebase --abort
+	rbr = recent-branches
+	recent-branches = "!f() { git branch --sort=-committerdate | head -n 10;}; f"
+	prev-branch-name = "!f() { git name-rev @{-1} --name-only | cut -d/ -f3-; }; f"
+	fo = fetch origin
+	rom = rebase origin/master
+[rerere]
+	enabled = true
+[fetch]
+	prune = true
+[branch "master"]
+	rebase = true
+[remote "origin"]
+	prune = true
+
+[url "git@github.com:"]
+    	insteadOf = git://github.com/
+    	insteadOf = https://github.com/
+[push]
+	default = current
+	recurseSubmodules = on-demand
+[submodule]
+	recurse = true
+[status]
+	submodulesummary = 1
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
