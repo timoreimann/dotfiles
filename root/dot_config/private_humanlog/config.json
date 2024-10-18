@@ -1,0 +1,7 @@
+{
+    "skip": ["eid", "pid", "egid"],
+    "keep": [],
+    "skip-unchanged": false,
+    "truncates": false,
+    "time-format": "2006-01-02T15:04:05Z07:00"
+}

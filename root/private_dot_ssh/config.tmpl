@@ -1,0 +1,12 @@
+IdentitiesOnly yes
+ServerAliveInterval 60
+ServerAliveCountMax 5
+FingerprintHash md5
+StrictHostKeyChecking no
+
+Host github.com
+    User git
+    IdentityFile ~/.ssh/{{- dig "githubKeyName" "github" . }}
+    StrictHostKeyChecking yes
+
+Include config.d/*

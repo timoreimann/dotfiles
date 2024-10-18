@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+### Appearance
+# Always show scroll bar
+defaults write -g AppleShowScrollBars -string Always
+# Click in the scroll bar to jump to the spot that's clicked
+defaults write -g AppleScrollerPagingBehavior -int 1
+
+### Control Centre
+# Show Bluetooth in control centre
+defaults write com.apple.controlcenter 'NSStatusItem Visible Bluetooth' -int 1
+# Show Battery in control centre
+defaults write com.apple.controlcenter 'NSStatusItem Visible Battery' -int 1
+# Show Battery percentage
+defaults write com.apple.menuextra.battery ShowPercent -string YES
+
+# Date: show always
+defaults write com.apple.menuextra.clock ShowDate -int 1
+# Date: show the day of the week
+defaults write com.apple.menuextra.clock ShowDayOfWeek -int 1
+# Date: digital style
+defaults write com.apple.menuextra.clock IsAnalog -int 0
+# Date: use the 24-hour clock
+defaults write com.apple.menuextra.clock Show24Hour -int 1
+# Date: display the time with seconds
+defaults write com.apple.menuextra.clock ShowSeconds -int 1
+
+### Desktop & Dock
+# Do not show recent applications in Dock
+defaults write com.apple.dock 'show-recents' -int 0
+# Set bottom-left corner to 'Application Windows'
+defaults write com.apple.dock wvous-bl-corner -int 3
+# Do not automatically rearrange Spaces based on most recent use
+defaults write com.apple.dock mru-spaces -int 0
+# Displays should not have separate Spaces
+defaults write com.apple.dock spans-displays -int 1
+
+### Trackpad
+# Tap to click
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -int 1
+# Disable natural scrolling
+## This does not work
+#defaults write -g com.apple.swipescrolldirection -int 0
+# Swipe between pages with two or three fingers
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 1
+# Swipe between full-screen applications: off
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerHorizSwipeGesture -int 0
+# Swipe for notification centre: off
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 0
+# Swipe down with three fingers for App Expose
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerVertSwipeGesture -int 2
+# Disable Launchpad and Show Desktop
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFiveFingerPinchGesture -int 0
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerPinchGesture -int 0
+
+### Keyboard
+# Use Fn keys as standard function keys
+defaults write -g com.apple.keyboard.fnState -int 1
+# Switch to desktop N via Option+N (seems unreliable)
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 118 "{enabled = 1; value = { parameters = (65535, 18, 262144); type = standard; }; }"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 119 "{enabled = 1; value = { parameters = (65535, 19, 262144); type = standard; }; }"
+# Disable shortcut for selecting the previous input source
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 "{enabled = 0; value = { parameters = (32, 49, 262144); type = standard; }; }"
+# Disable shortcut for selecting next source in Input menu
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "{enabled = 0; value = { parameters = (32, 49, 786432); type = standard; }; }"
+# Disable shortcut for opening man page in terminal
+defaults write pbs NSServicesStatus -dict-add "com.apple.Terminal - Search man Page Index in Terminal - searchManPages" '{ "enabled_context_menu" = 0; "enabled_services_menu" = 0; "presentation_modes" = { ContextMenu = 0; ServicesMenu = 0; }; }'
+# Disable shortcut for searching man page index in terminal
+defaults write pbs NSServicesStatus -dict-add "com.apple.Terminal - Open man Page in Terminal - openManPage" '{ "enabled_context_menu" = 0; "enabled_services_menu" = 0; "presentation_modes" = { ContextMenu = 0; ServicesMenu = 0; }; }'
+
+### Menu bar icons
+# Always show battery percentage
+defaults write com.apple.controlcenter "NSStatusItem Visible Item-5" -int 0
+# Always show bluetooth icon
+defaults write com.apple.controlcenter "NSStatusItem Preferred Position Bluetooth" -int 359
+# Do not show Input menu (for some reason, the option maps to two settings)
+defaults write com.apple.TextInputMenu visible -int 0
+defaults write com.apple.TextInputMenuAgent "NSStatusItem Visible Item-0" -int 0
+
+### iterm2
+# Specify the preferences directory
+defaults write com.googlecode.iterm2 PrefsCustomFolder -string "~/.settings/iterm2"
+
+# Tell iTerm2 to use the custom preferences in the directory
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+
+### Clipy
+# Max clipboard history size
+defaults write com.clipy-app.Clipy kCPYPrefMaxHistorySizeKey -int 150
+# Number of iteams place inline
+defaults write com.clipy-app.Clipy kCPYPrefNumberOfItemsPlaceInlineKey -int 30
+
+# Apply shortcut adjustments (disabled for now, not sure if needed and it might break disabling natural scrolling)
+#/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
