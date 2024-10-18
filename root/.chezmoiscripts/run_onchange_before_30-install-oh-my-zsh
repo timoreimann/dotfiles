@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-set -o errexit
-set -o nounset
-set -o pipefail
-
-# TODO: move to an external, especially because it seems to end in a sub-shell.
-if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-fi
