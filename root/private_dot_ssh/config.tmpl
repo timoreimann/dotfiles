@@ -4,9 +4,10 @@ ServerAliveCountMax 5
 FingerprintHash md5
 StrictHostKeyChecking no
 
+Include config.d/*
+
 Host github.com
     User git
     IdentityFile ~/.ssh/{{- dig "githubKeyName" "github" . }}
     StrictHostKeyChecking yes
 
-Include config.d/*
