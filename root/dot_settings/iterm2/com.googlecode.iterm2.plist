@@ -312,6 +312,8 @@
 	<true/>
 	<key>HotkeyMigratedFromSingleToMulti</key>
 	<true/>
+	<key>NeverBlockSystemShutdown</key>
+	<true/>
 	<key>NeverWarnAboutShortLivedSessions_FC4A56B3-D687-4C22-BD7C-C016E32CE34B</key>
 	<true/>
 	<key>NeverWarnAboutShortLivedSessions_FC4A56B3-D687-4C22-BD7C-C016E32CE34B_selection</key>
