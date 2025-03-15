@@ -1144,6 +1144,8 @@
 			<string>/Users/treimann</string>
 		</dict>
 	</array>
+	<key>OnlyWhenMoreTabs</key>
+	<true/>
 	<key>OpenArrangementAtStartup</key>
 	<false/>
 	<key>OpenNoWindowsAtStartup</key>
