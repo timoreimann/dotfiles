@@ -56,6 +56,8 @@ defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeF
 # Disable Launchpad and Show Desktop
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFiveFingerPinchGesture -int 0
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerPinchGesture -int 0
+# Disable force click to ease drag & drop
+defaults write com.apple.AppleMultitouchTrackpad ForceSuppressed -bool true
 
 ### Keyboard
 # Use Fn keys as standard function keys
