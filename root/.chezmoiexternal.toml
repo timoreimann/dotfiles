@@ -1,6 +1,5 @@
 [".oh-my-zsh"]
     type = "archive"
-    url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
+    url = "https://github.com/ohmyzsh/ohmyzsh/archive/c6e66edee824d83e84473ec666917b58323630df.tar.gz"
     exact = true
     stripComponents = 1
-    refreshPeriod = "168h"
