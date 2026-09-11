@@ -1,4 +1,6 @@
-export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+typeset -U path PATH manpath MANPATH
+manpath=(/opt/homebrew/opt/coreutils/libexec/gnuman "${manpath[@]}")
+export MANPATH
 
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
@@ -7,7 +9,8 @@ export ZSH=~/.oh-my-zsh
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="agnoster"
+# Starship configures the prompt below, so do not load a second prompt theme.
+ZSH_THEME=""
 #
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -70,8 +73,13 @@ source $ZSH/oh-my-zsh.sh
 # User configuration
 
 ## Update PATH only after oh-my-zsh has been configured since it seems to impact the order.
-export PATH="$HOME/bin:$HOME/dev/go/bin:/opt/homebrew/opt/coretils/libexec/gnubin:/opt/homebrew/opt/gnu-tar/libexec/gnubin:$PATH"
-export PATH="${PATH}:/opt/homebrew/opt/python@3/libexec/bin"
+path=(
+  "$HOME/bin"
+  "$HOME/dev/go/bin"
+  /opt/homebrew/opt/coreutils/libexec/gnubin
+  /opt/homebrew/opt/gnu-tar/libexec/gnubin
+  "${path[@]}"
+)
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -96,7 +104,7 @@ setopt NO_NOMATCH
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 
-alias zshconfig="vi ~/.zshrc"
+alias zshconfig='chezmoi -s base edit ~/.zshrc'
 alias ohmyzsh="vi ~/.oh-my-zsh"
 alias cz=chezmoi
 alias ghb="gh browse"
@@ -111,11 +119,9 @@ eval "$(starship init zsh)"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-# Enable bash-style word splitting (i.e., based on whitespace)
-setopt SH_WORD_SPLIT
-
 if [[ -d "${HOME}/.zshrc.d" ]]; then
-  for f in "${HOME}/.zshrc.d/"*; do
-    source "${f}"
+  for f in "${HOME}/.zshrc.d/"*(N); do
+    [[ -f "${f}" ]] && source "${f}"
   done
+  unset f
 fi
