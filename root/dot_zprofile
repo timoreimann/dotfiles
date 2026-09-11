@@ -1,0 +1,5 @@
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Keep user-installed commands available to non-interactive login shells.
+typeset -U path PATH
+path=("$HOME/bin" "$HOME/dev/go/bin" "${path[@]}")
