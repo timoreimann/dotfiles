@@ -83,6 +83,12 @@ defaults write com.apple.controlcenter "NSStatusItem Preferred Position Bluetoot
 defaults write com.apple.TextInputMenu visible -int 0
 defaults write com.apple.TextInputMenuAgent "NSStatusItem Visible Item-0" -int 0
 
+### .DS_Store handling
+# Disable copying to network drives
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
+# Disable copying to USB drives
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool TRUE
+
 ### iterm2
 # Specify the preferences directory
 defaults write com.googlecode.iterm2 PrefsCustomFolder -string "~/.settings/iterm2"
