@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# Give launchd-started apps (and what they spawn, e.g. terminal apps that
+# restore sessions) a PATH that includes Homebrew. Takes effect after a reboot.
+readonly LAUNCHD_PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+readonly CONFIG="/private/var/db/com.apple.xpc.launchd/config/user.plist"
+
+# The config file is world-readable, so skip sudo when the value is current.
+current=""
+if [[ -r "${CONFIG}" ]]; then
+    current="$(/usr/libexec/PlistBuddy -c 'Print :PathEnvironmentVariable' "${CONFIG}" 2>/dev/null || true)"
+fi
+
+if [[ "${current}" != "${LAUNCHD_PATH}" ]]; then
+    sudo launchctl config user path "${LAUNCHD_PATH}"
+    echo "launchd user PATH changed; reboot to apply" >&2
+fi
