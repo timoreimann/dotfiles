@@ -102,5 +102,39 @@ defaults write com.clipy-app.Clipy kCPYPrefMaxHistorySizeKey -int 150
 # Number of iteams place inline
 defaults write com.clipy-app.Clipy kCPYPrefNumberOfItemsPlaceInlineKey -int 30
 
+### Rectangle
+# Skip the welcome dialog that asks for the default shortcut set
+defaults write com.knollsoft.Rectangle wasWelcomeDisplayed -bool true
+# Use the Spectacle shortcut set as fallback for actions not set below
+defaults write com.knollsoft.Rectangle alternateDefaultShortcuts -bool false
+# Repeated actions cycle the window size like Spectacle (0 = resize)
+defaults write com.knollsoft.Rectangle subsequentExecutionMode -int 0
+defaults write com.knollsoft.Rectangle launchOnLogin -bool true
+
+# Set a shortcut for a Rectangle action.
+# Arguments: action name, macOS virtual key code, modifier flags.
+# Modifier flags are the sum of cmd (1048576), alt (524288),
+# ctrl (262144), and shift (131072).
+rectangle_shortcut() {
+    defaults write com.knollsoft.Rectangle "$1" -dict keyCode -int "$2" modifierFlags -int "$3"
+}
+rectangle_shortcut maximize 3 1572864           # alt+cmd+f
+rectangle_shortcut center 8 1572864             # alt+cmd+c
+rectangle_shortcut larger 124 917504            # ctrl+alt+shift+right
+rectangle_shortcut smaller 123 917504           # ctrl+alt+shift+left
+rectangle_shortcut topLeft 123 1310720          # ctrl+cmd+left
+rectangle_shortcut topRight 124 1310720         # ctrl+cmd+right
+rectangle_shortcut previousDisplay 123 1835008  # ctrl+alt+cmd+left
+rectangle_shortcut nextDisplay 124 1835008      # ctrl+alt+cmd+right
+# Repeated presses cycle through the thirds
+rectangle_shortcut firstThird 123 786432        # ctrl+alt+left
+rectangle_shortcut lastThird 124 786432         # ctrl+alt+right
+
+# Disable fallback shortcuts that block app shortcuts (e.g., alt+cmd+left/right
+# for tab switching). An empty dictionary means "no shortcut".
+for action in leftHalf rightHalf topHalf bottomHalf bottomLeft bottomRight; do
+    defaults write com.knollsoft.Rectangle "${action}" -dict
+done
+
 # Apply shortcut adjustments (disabled for now, not sure if needed and it might break disabling natural scrolling)
 #/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
