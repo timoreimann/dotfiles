@@ -13,7 +13,7 @@ Unfortunately, [chezmoi does not intend to support this model](https://github.co
 ## Setup
 
 1. Run `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/timoreimann/dotfiles/master/install.sh)"` to install the base source into `$HOME/.local/share/chezmoi/base`
-1. Start taskbar applications (Spectacle, Clipy)
+1. Start taskbar applications (Rectangle, Clipy) and grant Rectangle the Accessibility permission
 1. Log out and back in, add EurKEY in keyboard settings (under "other" keyboards), and change keyboard in taskbar icon
 1. (Optional) Install additional or derived configurations into `$HOME/.local/share/chezmoi/<other>` and hook up as needed.
 
