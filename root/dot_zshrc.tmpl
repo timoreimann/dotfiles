@@ -113,6 +113,45 @@ alias ghb="gh browse"
 alias g=git
 alias o=omp
 
+# Keep the Mac awake with caffeinate (display, idle, disk, system, and
+# user activity). Without an argument, run until interrupted. With a
+# duration, run for that time: a number with an optional unit suffix
+# s, m, or h (default: minutes).
+awake() {
+  if (( $# == 0 )); then
+    caffeinate -dimsu
+    return
+  fi
+
+  if (( $# != 1 )); then
+    print -u2 'Usage: awake [duration[s|m|h]]'
+    return 2
+  fi
+
+  local duration=$1
+  local unit=m
+
+  if [[ $duration == *[smh] ]]; then
+    unit=${duration[-1]}
+    duration=${duration[1,-2]}
+  fi
+
+  # Accept positive integers only. 10# forces base 10 for leading zeros.
+  if [[ $duration != <-> ]] || (( 10#$duration <= 0 )); then
+    print -u2 'Usage: awake [duration[s|m|h]]'
+    return 2
+  fi
+
+  local -i seconds
+  case $unit in
+    s) seconds=$(( 10#$duration )) ;;
+    m) seconds=$(( 10#$duration * 60 )) ;;
+    h) seconds=$(( 10#$duration * 3600 )) ;;
+  esac
+
+  caffeinate -dimsu -t "$seconds"
+}
+
 # direnv support
 eval "$(direnv hook zsh)"
 
