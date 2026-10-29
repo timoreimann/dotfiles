@@ -1,0 +1,27 @@
+#theme = Aardvark Blue
+#theme = Blue Matrix
+#theme = Borland
+#theme = Tomorrow Night Blue
+theme = OpenCode
+macos-titlebar-style = native
+
+keybind = page_up=scroll_page_up
+keybind = page_down=scroll_page_down
+keybind = cmd+left=previous_tab
+keybind = cmd+right=next_tab
+keybind = cmd+shift+up=jump_to_prompt:-1
+keybind = cmd+shift+down=jump_to_prompt:1
+
+copy-on-select = clipboard
+selection-clear-on-copy = true
+cursor-style = block
+cursor-style-blink = false
+cursor-opacity = 1.0
+cursor-click-to-move = true
+maximize = true
+clipboard-trim-trailing-spaces = true
+shell-integration = zsh
+shell-integration-features = no-cursor
+undo-timeout = 30s
+confirm-close-surface = false
+desktop-notifications = true
