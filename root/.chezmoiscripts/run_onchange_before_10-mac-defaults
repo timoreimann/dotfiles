@@ -89,13 +89,6 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
 # Disable copying to USB drives
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool TRUE
 
-### iterm2
-# Specify the preferences directory
-defaults write com.googlecode.iterm2 PrefsCustomFolder -string "~/.settings/iterm2"
-
-# Tell iTerm2 to use the custom preferences in the directory
-defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
-
 ### Clipy
 # Max clipboard history size
 defaults write com.clipy-app.Clipy kCPYPrefMaxHistorySizeKey -int 150

@@ -118,8 +118,6 @@ source <(fzf --zsh)
 
 eval "$(starship init zsh)"
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
 if [[ -d "${HOME}/.zshrc.d" ]]; then
   for f in "${HOME}/.zshrc.d/"*(N); do
     [[ -f "${f}" ]] && source "${f}"
