@@ -2,12 +2,18 @@ IdentitiesOnly yes
 ServerAliveInterval 60
 ServerAliveCountMax 5
 FingerprintHash md5
-StrictHostKeyChecking no
-
-Include config.d/*
 
 Host github.com
     User git
     IdentityFile ~/.ssh/{{- dig "githubKeyName" "github" . }}
     StrictHostKeyChecking yes
 
+# Additional configuration from derived chezmoi sources. "Match all" ends the
+# Host block above, so that the files apply to all hosts.
+Match all
+    Include config.d/*
+
+# For each option, ssh uses the first value that it finds. Keep defaults that
+# host blocks override at the end, below all host blocks and includes.
+Host *
+    StrictHostKeyChecking no
