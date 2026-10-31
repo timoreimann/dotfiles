@@ -1,1 +1,7 @@
 export GOPATH=$HOME/dev/go
+
+# Environment from derived chezmoi sources, each providing
+# ~/.zshrc.d/<source>/zshenv.
+for f in "${HOME}/.zshrc.d/"*/zshenv(N); do
+  source "$f"
+done

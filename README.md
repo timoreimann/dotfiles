@@ -19,7 +19,8 @@ Unfortunately, [chezmoi does not intend to support this model](https://github.co
 
 ## Available hooks
 
-- source additional zsh configuration by creating files below `$HOME/.zshrc.d/`
+- source additional zsh configuration from a derived source by providing `$HOME/.zshrc.d/<source>/zshrc` (for interactive shells) and `$HOME/.zshrc.d/<source>/zshenv` (for all shells)
+- export API tokens by creating the unmanaged file `$HOME/.zshrc.d/secrets`; `~/.zshrc` sources it when it exists
 - activate extra oh-my-zsh plugins by defining the chezmoi data field `zshPluginsExtra`
 - source additional ssh configuration by creating files below `$HOME/.ssh/config.d/`
 - change the name of the Github SSH key defining the chezmoi data field `githubKeyName`
