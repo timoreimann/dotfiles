@@ -22,6 +22,7 @@ Unfortunately, [chezmoi does not intend to support this model](https://github.co
 - source work-specific zsh configuration by providing `$HOME/.zshrc.d/work/zshrc` (for interactive shells) and `$HOME/.zshrc.d/work/zshenv` (for all shells)
 - export API tokens by creating the unmanaged file `$HOME/.zshrc.d/secrets`; `~/.zshrc` sources it when it exists
 - source additional ssh configuration by creating files below `$HOME/.ssh/config.d/`
+- add work-specific agent instructions by providing `$HOME/.config/agent-instructions/work.md`; omp imports it and the Codex copy includes it
 - add wd warp points with another `modify_dot_warprc` script; each source keeps the points of the other sources
 - change the name of the Github SSH key defining the chezmoi data field `githubKeyName`
 

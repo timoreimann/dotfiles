@@ -1,0 +1,10 @@
+{{- /* Codex reads only this file and does not expand imports, so copy the
+       instruction files into it. work.md exists only on work machines. */ -}}
+<!-- chezmoi builds this file from ~/.config/agent-instructions/base.md and work.md. Edit those files instead. -->
+
+{{ include "dot_config/agent-instructions/base.md" }}
+{{- $work := joinPath .chezmoi.homeDir ".config/agent-instructions/work.md" }}
+{{- if stat $work }}
+
+{{ include $work }}
+{{- end }}
