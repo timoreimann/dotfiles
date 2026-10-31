@@ -44,28 +44,29 @@
 	recent-branches = "!f() { git branch --sort=-committerdate | head -n 10;}; f"
 	prev-branch-name = "!f() { git name-rev @{-1} --name-only | cut -d/ -f3-; }; f"
 	fo = fetch origin
-	rom = rebase origin/master
+	rodb = "!f() { branch=$(git default-branch) && git rebase \"$branch\"; }; f"
+	default-branch = "!f() { remote=\"${1:-origin}\"; for branch in main master; do if git show-ref --verify --quiet \"refs/remotes/$remote/$branch\"; then echo \"${remote}/${branch}\"; return 0; fi; done; echo \"error: no default branch (main or master) found on remote '${remote}'\" >&2; return 1; }; f \"$@\""
+	codb = "!f() { branch=$(git default-branch \"$@\") && git checkout \"$branch\"; }; f"
+	cb = "!f() { start=\"${2:-$(git default-branch)}\"; git checkout -b \"$1\" \"$start\"; }; f"
+	wta = "!f() { name=\"$1\"; commit=\"${2:-$(git default-branch)}\"; branch=$(basename \"$name\"); git worktree add -b \"$branch\" \"$name\" \"$commit\"; }; f"
+	sync-main-ref = !git update-ref refs/heads/main refs/remotes/origin/main
+	latest = "!f() { remote=\"${1:-origin}\"; git fetch \"$remote\" && git codb \"$remote\"; }; f"
 [rerere]
 	enabled = true
 [fetch]
 	prune = true
 [branch "master"]
 	rebase = true
-[remote "origin"]
-	prune = true
-
 [url "git@github.com:"]
     	insteadOf = git://github.com/
     	insteadOf = https://github.com/
 [push]
 	default = current
 	recurseSubmodules = on-demand
+	autoSetupRemote = true
 [submodule]
-	recurse = true
+	recurse = false
 [status]
-	submodulesummary = 1
-[filter "lfs"]
-	process = git-lfs filter-process
-	required = true
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
+	submoduleSummary = false
+[init]
+	defaultBranch = main
