@@ -1,1 +1,6 @@
 export GOPATH=$HOME/dev/go
+
+# Work-specific environment, provided by the work chezmoi source.
+if [[ -r "${HOME}/.zshrc.d/work/zshenv" ]]; then
+  source "${HOME}/.zshrc.d/work/zshenv"
+fi

@@ -1,6 +1,10 @@
-typeset -U path PATH manpath MANPATH
+typeset -U path fpath PATH manpath MANPATH
+typeset +x FPATH
 manpath=(/opt/homebrew/opt/coreutils/libexec/gnuman "${manpath[@]}")
 export MANPATH
+
+# Non-login shells do not run brew shellenv, so add Homebrew here as well.
+path=(/opt/homebrew/bin /opt/homebrew/sbin "${path[@]}")
 
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
@@ -20,13 +24,13 @@ ZSH_THEME=""
 # HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+DISABLE_AUTO_UPDATE=true
 
 # Uncomment the following line to change how often to auto-update (in days).
 # export UPDATE_ZSH_DAYS=13
 
 # Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
+DISABLE_LS_COLORS=true
 
 # Uncomment the following line to disable auto-setting terminal title.
 # DISABLE_AUTO_TITLE="true"
@@ -52,6 +56,9 @@ ZSH_THEME=""
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
+
+HOMEBREW_PREFIX=/opt/homebrew
+ZSH_DISABLE_COMPFIX=true
 
 setopt HIST_IGNORE_SPACE
 HISTSIZE=10000000
@@ -80,6 +87,7 @@ path=(
   /opt/homebrew/opt/gnu-tar/libexec/gnubin
   "${path[@]}"
 )
+path+=(/opt/homebrew/opt/python@3/libexec/bin)
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -92,12 +100,16 @@ path=(
 # else
 #   export EDITOR='mvim'
 # fi
+export EDITOR="vim"
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
 # allow HEAD^ to work
 setopt NO_NOMATCH
+
+# Enable bash-style word splitting (i.e., based on whitespace)
+setopt SH_WORD_SPLIT
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
@@ -112,6 +124,7 @@ alias cz=chezmoi
 alias ghb="gh browse"
 alias g=git
 alias o=omp
+alias ls='ls -G'
 
 # Keep the Mac awake with caffeinate (display, idle, disk, system, and
 # user activity). Without an argument, run until interrupted. With a
@@ -155,13 +168,19 @@ awake() {
 # direnv support
 eval "$(direnv hook zsh)"
 
+eval "$(zoxide init zsh)"
+
 source <(fzf --zsh)
 
 eval "$(starship init zsh)"
 
-if [[ -d "${HOME}/.zshrc.d" ]]; then
-  for f in "${HOME}/.zshrc.d/"*(N); do
-    [[ -f "${f}" ]] && source "${f}"
-  done
-  unset f
+# API tokens (unmanaged, mode 0600). It exports GITHUB_PERSONAL_ACCESS_TOKEN,
+# which the GitHub MCP servers of omp and opencode read from the environment.
+if [[ -r "${HOME}/.zshrc.d/secrets" ]]; then
+  source "${HOME}/.zshrc.d/secrets"
+fi
+
+# Work-specific configuration, provided by the work chezmoi source.
+if [[ -r "${HOME}/.zshrc.d/work/zshrc" ]]; then
+  source "${HOME}/.zshrc.d/work/zshrc"
 fi
