@@ -94,6 +94,9 @@ defaults write com.apple.desktopservices DSDontWriteUSBStores -bool TRUE
 defaults write com.clipy-app.Clipy kCPYPrefMaxHistorySizeKey -int 150
 # Number of iteams place inline
 defaults write com.clipy-app.Clipy kCPYPrefNumberOfItemsPlaceInlineKey -int 30
+# Disable the main menu hotkey (default: cmd+shift+v). Apps then keep
+# cmd+shift+v for "Paste and Match Style". The value is the JSON text "null".
+defaults write com.clipy-app.Clipy mainKeyCombo -data 6e756c6c
 
 ### Rectangle
 # Skip the welcome dialog that asks for the default shortcut set
