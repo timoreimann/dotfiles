@@ -1,0 +1,9 @@
+{{- /* Codex reads only this file and does not expand imports, so copy the
+       instruction files into it. Derived chezmoi sources drop their own
+       .md file into ~/.config/agent-instructions. */ -}}
+<!-- chezmoi builds this file from ~/.config/agent-instructions/base.md plus every other .md file in that directory. Edit those files instead. -->
+
+{{ include "dot_config/agent-instructions/base.md" }}
+{{- range $f := glob (joinPath .chezmoi.homeDir ".config/agent-instructions" "*.md") }}{{ if ne (base $f) "base.md" }}
+
+{{ include $f }}{{ end }}{{ end }}
