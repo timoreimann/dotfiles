@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# chezmoi modify script for ~/.warprc, the warp points of the oh-my-zsh wd
+# plugin. chezmoi passes the current file on stdin and writes stdout back.
+#
+# Other chezmoi sources and `wd add` also write this file. Keep their points,
+# and set the points below: a point with the same name is replaced. Removing a
+# point from this list does not remove it from the file.
+set -euo pipefail
+
+points=(
+  "dev:~/dev"
+  "go:~/dev/go"
+  "skills:~/.agents/skills"
+  "t:~/Tasks"
+)
+
+{
+  printf '%s\n' "${points[@]}"
+  # macOS awk rejects newlines in -v values. Point names contain no spaces.
+  awk -F: -v names="${points[*]%%:*}" '
+    BEGIN { n = split(names, list, " "); for (i = 1; i <= n; i++) own[list[i]] = 1 }
+    NF && !($1 in own)
+  '
+} | LC_ALL=C sort
