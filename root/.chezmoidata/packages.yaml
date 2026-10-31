@@ -36,6 +36,7 @@ packages:
     - watch
     - wget
     - yq
+    - zoxide
     - zsh
   casks:
     - clipy
