@@ -1,6 +1,7 @@
 packages:
   taps:
     #- homebrew/bundle
+    - can1357/tap
     - humanlogio/homebrew-tap
   brews:
     - bash
@@ -22,6 +23,7 @@ packages:
     - grep
     - humanlog
     - jq
+    - can1357/tap/omp
     - mosh
     - netcat
     - npm

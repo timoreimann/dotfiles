@@ -24,6 +24,7 @@ Unfortunately, [chezmoi does not intend to support this model](https://github.co
 - source additional ssh configuration by creating files below `$HOME/.ssh/config.d/`
 - add work-specific agent instructions by providing `$HOME/.config/agent-instructions/work.md`; omp imports it and the Codex copy includes it
 - add wd warp points with another `modify_dot_warprc` script; each source keeps the points of the other sources
+- set omp settings with another `modify_private_config.yml` script in `.omp/agent`; each source deep-merges its settings and keeps the others
 - change the name of the Github SSH key defining the chezmoi data field `githubKeyName`
 
 Extra data fields can be incorporated by linking from `root/.chezmoidata/<file>` to a destination in a derived `.chezmoidata` configuration. Such links will be chezmoi-ignored automatically if the name is prefixed with `czext-`.
