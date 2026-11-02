@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# chezmoi modify script for ~/.omp/agent/config.yml, the global omp settings.
+# chezmoi passes the current file on stdin and writes stdout back.
+#
+# omp and derived chezmoi sources also write this file. Keep their settings,
+# and deep-merge the settings below into the file: a map merges key by key,
+# and a scalar or a list replaces the current value. Removing a setting from
+# this list does not remove it from the file.
+#
+# A derived source may set the model settings (enabledModels, modelRoles,
+# retry.fallbackChains, task.agentModelOverrides) if they refer to its own
+# model gateways.
+set -euo pipefail
+
+settings=$(cat <<'EOF'
+advisor:
+  enabled: true
+  syncBacklog: "3"
+  maxNotesPerUpdate: 2
+statusLine:
+  compactThinkingLevel: false
+spelling:
+  autocomplete: ngram
+computer:
+  enabled: true
+tools:
+  approval:
+    computer: prompt
+hideThinkingBlock: true
+display:
+  collapseCompacted: false
+tui:
+  hyperlinks: always
+EOF
+)
+
+current=$(cat)
+# yq needs a YAML map. A new machine has no file yet.
+if [[ -z "${current//[[:space:]]/}" ]]; then
+  current='{}'
+fi
+# omp writes the file without a final newline. Do the same, so that the next
+# omp save does not show up as a chezmoi diff.
+printf '%s' "$(SETTINGS="${settings}" yq '. * env(SETTINGS)' <<<"${current}")"
