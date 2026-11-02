@@ -1,0 +1,28 @@
+# Agent skills from public GitHub repositories. .chezmoiexternal.toml.tmpl
+# installs each skill into ~/.agents/skills/<name>. To update a repository's
+# skills, set its commit to a newer one.
+skillRepos:
+  mattpocock/skills: a496f5513d4a4cf889bc48e189e579f4b0bdf6aa
+  petergyang/no-ai-slop: 000650b156983f5159695b441477f4e63b25dc85
+  vercel-labs/skills: 92a9a34ac3bf88e695e468b90c7bf32f163d32c8
+
+# path is the skill directory in the repository.
+skills:
+  - name: domain-modeling
+    repo: mattpocock/skills
+    path: skills/engineering/domain-modeling
+  - name: find-skills
+    repo: vercel-labs/skills
+    path: skills/find-skills
+  - name: grill-me
+    repo: mattpocock/skills
+    path: skills/productivity/grill-me
+  - name: grill-with-docs
+    repo: mattpocock/skills
+    path: skills/engineering/grill-with-docs
+  - name: grilling
+    repo: mattpocock/skills
+    path: skills/productivity/grilling
+  - name: no-ai-slop
+    repo: petergyang/no-ai-slop
+    path: skills/no-ai-slop
