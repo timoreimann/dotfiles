@@ -1,0 +1,17 @@
+[".oh-my-zsh"]
+    type = "archive"
+    url = "https://github.com/ohmyzsh/ohmyzsh/archive/c6e66edee824d83e84473ec666917b58323630df.tar.gz"
+    exact = true
+    stripComponents = 1
+
+{{- /* One archive per skill. The archive holds "<repo>-<commit>/<path>/...", so
+       strip the top directory plus the path components. */}}
+{{- range .skills }}
+
+[{{ printf ".agents/skills/%s" .name | quote }}]
+    type = "archive"
+    url = {{ printf "https://github.com/%s/archive/%s.tar.gz" .repo (index $.skillRepos .repo) | quote }}
+    exact = true
+    stripComponents = {{ add 1 (len (splitList "/" .path)) }}
+    include = [{{ printf "*/%s/**" .path | quote }}]
+{{- end }}

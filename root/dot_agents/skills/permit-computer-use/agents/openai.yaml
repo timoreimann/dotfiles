@@ -1,0 +1,5 @@
+interface:
+  display_name: "Permit Computer Use"
+  short_description: "Grant session-wide consent for routine computer use"
+policy:
+  allow_implicit_invocation: false
