@@ -24,6 +24,7 @@ Unfortunately, [chezmoi does not intend to support this model](https://github.co
 - source additional ssh configuration by creating files below `$HOME/.ssh/config.d/`
 - add work-specific agent instructions by providing `$HOME/.config/agent-instructions/work.md`; omp imports it and the Codex copy includes it
 - add wd warp points with another `modify_dot_warprc` script; each source keeps the points of the other sources
+- add global Git ignore patterns with another `modify_dot_gitignore` script; each source owns one marked section of `~/.gitignore`
 - set omp settings with another `modify_private_config.yml` script in `.omp/agent`; each source deep-merges its settings and keeps the others
 - add agent skills as directories below `$HOME/.agents/skills/`; the public skills that base installs are listed in `root/.chezmoidata/skills.yaml`
 - change the name of the Github SSH key defining the chezmoi data field `githubKeyName`
