@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# chezmoi modify script for ~/.gitignore, the global Git ignore file
+# (core.excludesFile). chezmoi passes the current file on stdin and writes
+# stdout back.
+#
+# Git reads only one global ignore file, so derived chezmoi sources also write
+# this file. Each source owns one marked section and replaces only that
+# section. Lines outside the sections stay.
+set -euo pipefail
+
+section="base"
+patterns=(
+  ".DS_Store"
+  "**/debug.test"
+  "**/.idea/"
+  "**/.ijwb/"
+  "**/.vscode/"
+  ".envrc"
+  ".autoenv.zsh"
+  ".autoenv_leave.zsh"
+  "node_modules/"
+  # Cloudflare Workers (wrangler) local secrets and state.
+  ".dev.vars"
+  ".wrangler/"
+)
+
+begin="# >>> chezmoi ${section} >>>"
+end="# <<< chezmoi ${section} <<<"
+# Replace the old section where it is, so that the order of the sections stays
+# stable. Append the section if the file does not have it yet.
+# macOS awk rejects newlines in -v values, so pass the section through ENVIRON.
+SECTION="$(printf '%s\n' "${begin}" "${patterns[@]}" "${end}")" \
+  awk -v begin="${begin}" -v end="${end}" '
+    $0 == begin { print ENVIRON["SECTION"]; found = 1; skip = 1; next }
+    $0 == end { skip = 0; next }
+    !skip
+    END { if (!found) print ENVIRON["SECTION"] }
+  '
