@@ -1,0 +1,4 @@
+# oh-my-zsh writes its cache below its installation directory. The
+# .oh-my-zsh external is exact, so without this entry each apply would delete
+# the cache files.
+.oh-my-zsh/cache/**
