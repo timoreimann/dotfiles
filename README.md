@@ -23,6 +23,7 @@ Unfortunately, [chezmoi does not intend to support this model](https://github.co
 - export API tokens by creating the unmanaged file `$HOME/.zshrc.d/secrets`; `~/.zshrc` sources it when it exists
 - source additional ssh configuration by creating files below `$HOME/.ssh/config.d/`
 - add source-specific agent instructions by providing `$HOME/.config/agent-instructions/<source>.md`; omp imports it and the Codex copy includes it
+- add source-specific Ghostty configuration via the optional `config-file` hook in `$HOME/.config/ghostty/config`; its values override the base configuration
 - add wd warp points with another `modify_dot_warprc` script; each source keeps the points of the other sources
 - add global Git ignore patterns with another `modify_dot_gitignore` script; each source owns one marked section of `~/.gitignore`
 - set omp settings with another `modify_private_config.yml` script in `.omp/agent`; each source deep-merges its settings and keeps the others
