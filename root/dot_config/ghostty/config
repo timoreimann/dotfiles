@@ -25,3 +25,7 @@ shell-integration-features = no-cursor
 undo-timeout = 30s
 confirm-close-surface = false
 desktop-notifications = true
+
+# Work-specific configuration, provided by the work chezmoi source. Ghostty
+# loads it after this file, so its values take precedence.
+config-file = ?work
