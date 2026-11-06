@@ -10,6 +10,11 @@
 # A derived source may set the model settings (enabledModels, modelRoles,
 # retry.fallbackChains, task.agentModelOverrides) if they refer to its own
 # model gateways.
+#
+# tools.approvalMode repeats the schema default, yolo, on purpose. omp in
+# ACP mode (for example, Orca's Chat UI) asks the client to approve
+# unmatched bash commands unless the value is set explicitly. The comment
+# stays here because omp removes YAML comments when it saves the file.
 set -euo pipefail
 
 settings=$(cat <<'EOF'
@@ -24,6 +29,7 @@ spelling:
 computer:
   enabled: true
 tools:
+  approvalMode: yolo
   approval:
     computer: prompt
 hideThinkingBlock: true
