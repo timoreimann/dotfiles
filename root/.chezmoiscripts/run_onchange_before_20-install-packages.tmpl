@@ -3,7 +3,14 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-brew bundle --file=/dev/stdin <<EOF
+# Prefer brew-auth (1Password-backed GitHub token) when a derived source
+# provides it, so taps do not hit unauthenticated API rate limits.
+brew_cmd="brew"
+if command -v brew-auth >/dev/null 2>&1; then
+  brew_cmd="brew-auth"
+fi
+
+"${brew_cmd}" bundle --file=/dev/stdin <<EOF
 {{ range .packages.taps -}}
 tap {{ . | quote }}
 {{ end -}}
