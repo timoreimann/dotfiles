@@ -6,14 +6,14 @@ My agent instructions come from `~/.config/agent-instructions/base.md` (this fil
 
 When I ask you to change my agent instructions, follow these rules:
 
-- Edit `base.md` or a source-specific `.md` file. Do not edit `~/.omp/agent/AGENTS.md` or `~/.codex/AGENTS.md`. These files only import or copy the instruction files.
+- Edit `base.md` or a source-specific `.md` file. Do not edit `~/.omp/agent/AGENTS.md`, `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, or `~/.vibe/AGENTS.md`. These files only import or copy the instruction files.
 - Put a rule in a source-specific file if it needs the systems, networks, accounts, or conventions of that source, for example internal systems, registries, or secrets.
 - Put all other rules in `base.md`. A rule belongs there if it is also useful on another machine.
 - If a rule has a general part and a machine-specific part, put each part in its own file.
 - After the edit, copy the change into the chezmoi source of the file:
   - For `base.md`, run `chezmoi -s base re-add ~/.config/agent-instructions/base.md`.
   - For a source-specific file, run `chezmoi -s <source> re-add ~/.config/agent-instructions/<file>`.
-- Then update the Codex copy with `chezmoi -s base apply ~/.codex/AGENTS.md`.
+- Then update the generated copies with `chezmoi -s base apply ~/.codex/AGENTS.md ~/.claude/CLAUDE.md` and, on machines with the `personal` source, `chezmoi -s personal apply ~/.vibe/AGENTS.md`.
 - Do not commit the chezmoi change unless I tell you to.
 
 # General
