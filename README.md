@@ -30,7 +30,7 @@ Unfortunately, [chezmoi does not intend to support this model](https://github.co
 - add agent skills as directories below `$HOME/.agents/skills/`; the public skills that base installs are listed in `root/.chezmoidata/skills.yaml`
 - change the name of the Github SSH key defining the chezmoi data field `githubKeyName`
 
-Extra data fields can be incorporated by linking from `root/.chezmoidata/<file>` to a destination in a derived `.chezmoidata` configuration. Such links will be chezmoi-ignored automatically if the name is prefixed with `czext-`.
+Extra data fields can be incorporated by linking from `root/.chezmoidata/<file>` to a destination in a derived `.chezmoidata` configuration. Such links will be chezmoi-ignored automatically if the name is prefixed with `czext-`. Use a relative link target so the link survives different home directory paths.
 
 ## Working with multiple sources
 
