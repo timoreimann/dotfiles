@@ -31,6 +31,12 @@ When I ask you to change my agent instructions, follow these rules:
 - Project rules take precedence over the rules in my agent instructions when they conflict.
   - Project rules include project agent files (for example, `AGENTS.md`), contribution guides, and established code conventions.
   - Exception: the rules in my agent instructions for consent, commits, external systems, and secrets always apply.
+- Write each artifact as if it always had its current shape.
+  - Artifacts include commit messages, MR descriptions, documents, and code comments.
+  - When a fact or decision changes, rewrite the affected text. Do not mention the earlier fact, version, or reversal.
+  - Version control and document history keep the past. Do not copy it into the artifact.
+  - Exception: the purpose of the artifact is history, for example a changelog or an ADR. Another exception is when I ask for history.
+  - This rule is for artifacts. In chat, tell me what you changed.
 
 # ASD-STE100 Simplified Technical English
 
@@ -115,7 +121,6 @@ When I ask you to change my agent instructions, follow these rules:
 - Describe the problem in general terms first. Then give specific cases where it occurred (projects, jobs, tickets) as evidence.
 - Make the message clear to a reader who does not know the specific case. Do not depend on links for the main explanation.
 - List smaller and drive-by changes as bullet points under the heading "Additional changes:".
-- When you amend a commit, do not record or refer to earlier decisions or versions. Write each commit as if it always had its current shape.
 - Keep commit messages short and focused. Do not describe implementation details unless they are necessary, for example to explain a bug. Prefer concise text to long explanations.
 - Follow the 50/72 rule for every commit message:
   - The title has 50 characters or fewer. This limit includes a ticket key prefix.
