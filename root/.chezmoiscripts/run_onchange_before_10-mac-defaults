@@ -94,13 +94,15 @@ defaults write com.apple.desktopservices DSDontWriteUSBStores -bool TRUE
 defaults write com.clipy-app.Clipy kCPYPrefMaxHistorySizeKey -int 150
 # Number of iteams place inline
 defaults write com.clipy-app.Clipy kCPYPrefNumberOfItemsPlaceInlineKey -int 30
-# Hotkeys that differ from the Clipy defaults. Clipy stores each one as JSON
-# text in a data value: "null" means no hotkey. Keep cmd+shift+v free for
-# "Paste and Match Style" in apps.
+# Clipy hotkeys. Clipy stores each one as JSON text in a data value: "null"
+# means no hotkey. In "modifiers", cmd is 256 and ctrl is 4096. Keep
+# cmd+shift+v free for "Paste and Match Style" in apps.
 # Main menu: none (default: cmd+shift+v).
 defaults write com.clipy-app.Clipy mainKeyCombo -data 6e756c6c
-# History menu: none (default: cmd+ctrl+v).
-defaults write com.clipy-app.Clipy historyKeyCombo -data 6e756c6c
+# History menu: cmd+ctrl+v (the default). Write it explicitly, so that every
+# machine gets the same value.
+# {"modifiers":4352,"key":"v","doubledModifiers":false}
+defaults write com.clipy-app.Clipy historyKeyCombo -data 7b226d6f64696669657273223a343335322c226b6579223a2276222c22646f75626c65644d6f64696669657273223a66616c73657d
 
 ### Rectangle
 # Skip the welcome dialog that asks for the default shortcut set
