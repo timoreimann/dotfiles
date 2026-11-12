@@ -7,8 +7,12 @@
 # and a scalar or a list replaces the current value. Removing a setting from
 # this list does not remove it from the file.
 #
-# A derived source may set the model settings (enabledModels, modelRoles,
-# retry.fallbackChains, task.agentModelOverrides) if they refer to its own
+# A default applies only when the file has no value for the setting. omp and
+# a derived source can change a default, and chezmoi keeps their value.
+#
+# A derived source may set the settings that this script does not set. An
+# example is the model settings (enabledModels, modelRoles,
+# retry.fallbackChains, task.agentModelOverrides), which refer to its own
 # model gateways.
 #
 # tools.approvalMode repeats the schema default, yolo, on purpose. omp in
@@ -17,9 +21,14 @@
 # stays here because omp removes YAML comments when it saves the file.
 set -euo pipefail
 
-settings=$(cat <<'EOF'
+defaults=$(cat <<'EOF'
 advisor:
   enabled: true
+EOF
+)
+
+settings=$(cat <<'EOF'
+advisor:
   syncBacklog: "3"
   maxNotesPerUpdate: 2
 statusLine:
@@ -45,6 +54,12 @@ current=$(cat)
 if [[ -z "${current//[[:space:]]/}" ]]; then
   current='{}'
 fi
+# Merge the defaults below the current file, and the settings above it. The
+# current file is the left operand of the first merge, so its key order stays.
+#
 # omp writes the file without a final newline. Do the same, so that the next
 # omp save does not show up as a chezmoi diff.
-printf '%s' "$(SETTINGS="${settings}" yq '. * env(SETTINGS)' <<<"${current}")"
+printf '%s' "$(
+  DEFAULTS="${defaults}" SETTINGS="${settings}" \
+    yq '(. * (env(DEFAULTS) * .)) * env(SETTINGS)' <<<"${current}"
+)"
