@@ -16,6 +16,14 @@ When I ask you to change my agent instructions, follow these rules:
 - Then update the generated copies with `chezmoi -s base apply ~/.codex/AGENTS.md ~/.claude/CLAUDE.md` and, on machines with the `personal` source, `chezmoi -s personal apply ~/.vibe/AGENTS.md`.
 - Do not commit the chezmoi change unless I tell you to.
 
+## Tool review rules
+
+- A machine can have a tool reviewer. A tool reviewer examines each tool call of an agent before the call runs. It does not read my agent instructions.
+- The tool reviewer reads its rules from `~/.omp/agent/tool-review/`. Each chezmoi source has one file there, with the name of the source (`base.md` for the `base` source).
+- These files repeat the rules of my agent instructions that concern consent. Examples are commits, external systems, browser windows, secrets, and the commands that I permit without a question.
+- When you change such a rule in an instruction file, make the same change in the tool review file of the same source.
+- After the edit, copy the change into the chezmoi source with `chezmoi -s <source> re-add ~/.omp/agent/tool-review/<file>`.
+
 # General
 
 - Check all of my proposals, ideas, and requests for consistency flaws, oversights, bugs, and other issues. The goal is always a sound outcome.
