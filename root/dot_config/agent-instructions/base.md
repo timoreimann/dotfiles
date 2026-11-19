@@ -45,6 +45,7 @@ When I ask you to change my agent instructions, follow these rules:
   - Version control and document history keep the past. Do not copy it into the artifact.
   - Exception: the purpose of the artifact is history, for example a changelog or an ADR. Another exception is when I ask for history.
   - This rule is for artifacts. In chat, tell me what you changed.
+- Do not record rejected solutions in artifacts unless I explicitly tell you to. This rule applies to all rejection reasons.
 - Do not give estimates of implementation effort or duration, for example "this takes 3-4 hours to build".
 
 # ASD-STE100 Simplified Technical English
@@ -126,7 +127,7 @@ When I ask you to change my agent instructions, follow these rules:
 - Do not commit or amend unless I explicitly instruct you to. I review the unstaged changes as a diff first.
 - Write commit message bodies in the order of the "meaningful-message" section of Git's `SubmittingPatches`:
   1. The problem or motivation: what is wrong or missing without the change.
-  2. The change and why it solves the problem. Name rejected alternatives and costs when they matter.
+  2. The change and why it solves the problem. Name costs when they matter.
 - Describe the problem in general terms first. Then give specific cases where it occurred (projects, jobs, tickets) as evidence.
 - Make the message clear to a reader who does not know the specific case. Do not depend on links for the main explanation.
 - List smaller and drive-by changes as bullet points under the heading "Additional changes:".

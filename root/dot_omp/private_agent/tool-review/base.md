@@ -6,6 +6,7 @@ These rules are for a tool reviewer, which examines each tool call of an agent b
 
 - A change to an external system. External systems include GitLab, GitHub, Jira, Confluence, Google Workspace, Cloudflare, and CI. Changes include comments, approvals, merges, pipeline reruns, and record updates.
 - A commit, an amended commit, and each other command that creates or rewrites commits.
+- A record of a rejected solution in an artifact, for all rejection reasons. Artifacts include commit messages, MR descriptions, documents, and code comments.
 - A command that opens a browser window.
 - `docker … prune` and `docker volume rm`.
 
