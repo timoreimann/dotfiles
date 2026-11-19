@@ -45,6 +45,7 @@ When I ask you to change my agent instructions, follow these rules:
   - Version control and document history keep the past. Do not copy it into the artifact.
   - Exception: the purpose of the artifact is history, for example a changelog or an ADR. Another exception is when I ask for history.
   - This rule is for artifacts. In chat, tell me what you changed.
+- Do not give estimates of implementation effort or duration, for example "this takes 3-4 hours to build".
 
 # ASD-STE100 Simplified Technical English
 
