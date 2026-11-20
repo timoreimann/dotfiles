@@ -1,0 +1,216 @@
+#!/usr/bin/env bash
+# Wrapper around omp that adds fuzzy <model>/<thinking> selection as $1.
+# Usage:
+#   o                         Start omp with default model and thinking
+#   o <model>/<thinking> ...  Fuzzily select model and thinking level
+#   o <model>/ ...            Fuzzily select model with default thinking
+#   o /<thinking> ...         Pick any model interactively with thinking level
+#   o / ...                   Pick any model interactively with default thinking
+
+set -euo pipefail
+
+main() {
+  if [[ $# -eq 0 ]]; then
+    exec omp
+  fi
+
+  local first="$1"
+
+  # Pass flags, @file refs, multi-word prompts, and slash-free args straight through.
+  if [[ "$first" == -* || "$first" == @* || "$first" == *[[:space:]]* || "$first" != */* ]]; then
+    exec omp "$@"
+  fi
+
+  local model_query="${first%/*}"
+  local thinking_query="${first##*/}"
+  shift
+
+  if [[ -n "$thinking_query" ]]; then
+    validate_global_thinking "$thinking_query"
+  fi
+
+  local selection
+  if selection="$(select_model "$model_query")"; then
+    :
+  else
+    exit $?
+  fi
+
+  local selector allowed_thinking
+  IFS=$'\t' read -r _ _ _ _ selector allowed_thinking <<< "$selection"
+
+  if [[ -z "$thinking_query" ]]; then
+    exec omp --model "$selector" "$@"
+  fi
+
+  local thinking
+  if thinking="$(resolve_thinking "$thinking_query" "$allowed_thinking" "$selector")"; then
+    :
+  else
+    exit $?
+  fi
+
+  exec omp --model "$selector" --thinking "$thinking" "$@"
+}
+
+# Reject impossible thinking queries before fetching the model catalog.
+validate_global_thinking() {
+  local raw_query="$1"
+  local query
+  query="$(printf '%s' "$raw_query" | tr '[:upper:]' '[:lower:]')"
+
+  if printf '%s\n' off minimal low medium high xhigh max auto | fzf --filter="$query" >/dev/null; then
+    return 0
+  fi
+
+  printf 'o: unknown thinking level "%s" (expected: off, minimal, low, medium, high, xhigh, max, auto)\n' \
+    "$raw_query" >&2
+  return 1
+}
+
+# Resolve model_query against configured omp providers:
+# exact id/selector match, then unique substring match, then fuzzy match via fzf.
+select_model() {
+  local model_query="$1"
+
+  local models_json
+  if ! models_json="$(omp models --json)"; then
+    return 1
+  fi
+
+  # Format every model as: id, name, display_thinking, provider, selector, allowed_thinking.
+  # shellcheck disable=SC2016
+  local row_expr='
+    (.thinking // []) as $t
+    | [
+        .id,
+        .name,
+        (if ($t | length) > 0 then "[" + ($t | join(",")) + "]" else "[-]" end),
+        .provider,
+        .selector,
+        (if ($t | length) > 0 then (["off"] + $t + ["auto"]) else ["off"] end | join(","))
+      ]
+    | @tsv
+  '
+
+  if [[ -n "$model_query" ]]; then
+    local direct_match
+    if ! direct_match="$(printf '%s\n' "$models_json" | jq -r --arg q "$model_query" "
+      (\$q | ascii_downcase) as \$ql
+      | ([.models[] | select((.id | ascii_downcase) == \$ql or (.selector | ascii_downcase) == \$ql)]) as \$exact
+      | if (\$exact | length) == 1 then
+          \$exact[0] | $row_expr
+        else
+          ([.models[] | select(
+            ((.id | ascii_downcase) | contains(\$ql))
+            or ((.name | ascii_downcase) | contains(\$ql))
+            or ((\$ql | contains(\"/\")) and ((.selector | ascii_downcase) | contains(\$ql)))
+          )]) as \$sub
+          | if (\$sub | length) == 1 then
+              \$sub[0] | $row_expr
+            else
+              empty
+            end
+        end
+    ")"; then
+      return 1
+    fi
+
+    if [[ -n "$direct_match" ]]; then
+      printf '%s\n' "$direct_match"
+      return 0
+    fi
+  fi
+
+  local model_rows
+  if ! model_rows="$(printf '%s\n' "$models_json" | jq -r ".models[] | $row_expr")"; then
+    return 1
+  fi
+
+  if [[ -z "$model_rows" ]]; then
+    printf 'o: no models available (run "omp models" to inspect)\n' >&2
+    return 1
+  fi
+
+  # Exclude the provider column from fuzzy matching unless the query includes "/".
+  local with_nth='1,2,3,4'
+  if [[ "$model_query" == */* ]]; then
+    with_nth='5,2,3'
+  fi
+
+  local selection
+  if selection="$(printf '%s\n' "$model_rows" | fzf \
+    --delimiter=$'\t' \
+    --with-nth="$with_nth" \
+    --nth=1,2 \
+    --select-1 \
+    --exit-0 \
+    --height=40% \
+    --reverse \
+    --prompt='model> ' \
+    --query="$model_query")"; then
+    printf '%s\n' "$selection"
+    return 0
+  else
+    local rc=$?
+    if [[ "$rc" -eq 1 ]]; then
+      printf 'o: no model matching "%s"\n' "$model_query" >&2
+    fi
+    return "$rc"
+  fi
+}
+
+# Match thinking_query against a model's supported thinking levels:
+# exact match, then unique prefix, then fuzzy match via fzf.
+resolve_thinking() {
+  local raw_query="$1"
+  local allowed_csv="$2"
+  local selector="$3"
+
+  local query
+  query="$(printf '%s' "$raw_query" | tr '[:upper:]' '[:lower:]')"
+
+  local -a levels=()
+  IFS=',' read -r -a levels <<< "$allowed_csv"
+
+  local level
+  for level in "${levels[@]}"; do
+    if [[ "$level" == "$query" ]]; then
+      printf '%s\n' "$level"
+      return 0
+    fi
+  done
+
+  local -a prefix_matches=()
+  for level in "${levels[@]}"; do
+    if [[ "$level" == "$query"* ]]; then
+      prefix_matches+=("$level")
+    fi
+  done
+
+  if [[ ${#prefix_matches[@]} -eq 1 ]]; then
+    printf '%s\n' "${prefix_matches[0]}"
+    return 0
+  fi
+
+  local selected
+  if selected="$(printf '%s\n' "${levels[@]}" | fzf \
+    --select-1 \
+    --exit-0 \
+    --height=40% \
+    --reverse \
+    --prompt='thinking> ' \
+    --query="$query")"; then
+    printf '%s\n' "$selected"
+    return 0
+  else
+    local rc=$?
+    if [[ "$rc" -eq 1 ]]; then
+      printf 'o: thinking level "%s" is not supported by %s (supported: %s)\n' \
+        "$raw_query" "$selector" "${allowed_csv//,/, }" >&2
+    fi
+    return "$rc"
+  fi
+}
+
+main "$@"

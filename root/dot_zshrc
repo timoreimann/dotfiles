@@ -118,7 +118,6 @@ alias ohmyzsh="vi ~/.oh-my-zsh"
 alias cz=chezmoi
 alias ghb="gh browse"
 alias g=git
-alias o=omp
 alias ls='ls -G'
 
 # Keep the Mac awake with caffeinate (display, idle, disk, system, and
