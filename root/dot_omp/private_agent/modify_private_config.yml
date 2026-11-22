@@ -46,6 +46,9 @@ display:
   collapseCompacted: false
 tui:
   hyperlinks: always
+contextFiles:
+  extra:
+    - AGENTS.local.md
 EOF
 )
 

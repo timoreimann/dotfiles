@@ -22,6 +22,8 @@ patterns=(
   # Cloudflare Workers (wrangler) local secrets and state.
   ".dev.vars"
   ".wrangler/"
+  # Local-only agent instructions.
+  "AGENTS.local.md"
 )
 
 begin="# >>> chezmoi ${section} >>>"
