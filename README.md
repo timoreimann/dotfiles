@@ -37,6 +37,8 @@ Derived sources can call the `section` template in `root/.chezmoitemplates` dire
 
 The dotfiles provide a chezmoi wrapper at `$HOME/bin/chezmoi` that simplifies working with multiple sources:
 
-- The `-s <source>` flag selects a source below `$HOME/.local/share/chezmoi/<source>`.
-- When invoking below `$HOME/.local/share/chezmoi/<source>`, the `<source>` directory will be selected automatically.
-- When the vanilla chezmoi source directory is used, the wrapper will behave identical to the vanilla `chezmoi` command.
+- `-s <source>` (as the first argument) selects a source below `$HOME/.local/share/chezmoi/<source>`.
+- `-s all` runs the command against `base` first, then each derived source in alphabetical order, stopping on the first error.
+- Explicit `--source` / `-S` flags and source-independent flags or commands (`--version`, `-h`, `--help`, `help`, `completion`, `license`, `upgrade`) pass straight through to `chezmoi`.
+- When invoked below `$HOME/.local/share/chezmoi/<source>`, the wrapper selects `<source>` automatically.
+- When the vanilla single-source layout (`$HOME/.local/share/chezmoi/.git`) is used, the wrapper behaves identically to vanilla `chezmoi`.

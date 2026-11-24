@@ -2,50 +2,95 @@
 ##
 ## chezmoi wrapper adding the following functionality:
 ##
-##  - selection of a sub-directoried chezmoi source
+##  - selection of a sub-directoried chezmoi source (-s <source>)
+##  - ordered execution across all sources (-s all)
 ##  - detection and usage of source from current directory
+##  - pass-through for explicit --source/-S and source-independent flags
 ##  - fallback to vanilla chezmoi if default source path exists
 ##
-set -o errexit
-set -o nounset
-set -o pipefail
+set -euo pipefail
 
 shopt -s nullglob
 
-readonly CHEZMOI_BIN="{{ output "brew" "--prefix" | trim}}/bin/chezmoi"
+readonly CHEZMOI_BIN="{{ output "brew" "--prefix" | trim }}/bin/chezmoi"
 readonly SOURCE_PATH_COMMON="${HOME}/.local/share/chezmoi"
+
+# Discover sources below the default chezmoi source path, with base first.
+declare -a sources=()
+if [[ ! -d "${SOURCE_PATH_COMMON}/.git" ]]; then
+    if [[ -d "${SOURCE_PATH_COMMON}/base" ]]; then
+        sources+=("base")
+    fi
+    for source in "${SOURCE_PATH_COMMON}"/*; do
+        if [[ ! -d "${source}" ]]; then
+            continue
+        fi
+        source="$(basename "${source}")"
+        if [[ "${source}" == "base" ]]; then
+            continue
+        fi
+        sources+=("${source}")
+    done
+fi
 
 create_source_path() {
     local _source="$1"
     echo "${SOURCE_PATH_COMMON}/${_source}"
 }
 
-# Discover sources below the default chezmoi source path as directory.
-declare -a sources=()
-if [[ ! -d "${SOURCE_PATH_COMMON}/.git" ]]; then
-    for source in "${SOURCE_PATH_COMMON}"/*; do
-        if [[ ! -d "${source}" ]]; then continue; fi
-        source="$(basename "${source}")"
-        sources+=("${source}")
-    done
-fi
-
 usage() {
-    echo "usage: $(basename "$0") [-s [${sources[*]}]]"
-    exit
+    echo "usage: $(basename "$0") [-s [all ${sources[*]}]] [chezmoi arguments...]"
 }
 
-while getopts ":s:" opt; do
-    case "${opt}" in
-        s)
-            source_arg="${OPTARG}"
-            ;;
-    esac
-done
-shift $((OPTIND-1))
+# Return 0 if the arguments contain an explicit --source or -S flag before --.
+has_explicit_source_flag() {
+    local arg
+    for arg in "$@"; do
+        case "${arg}" in
+            --)
+                return 1
+                ;;
+            -S|-S*|--source|--source=*)
+                return 0
+                ;;
+        esac
+    done
+    return 1
+}
 
-if [[ "${source_arg:-}" ]]; then
-    # Invoke chezmoi with given source (if it exists).
+# Pass through invocations with no arguments or source-independent flags.
+if [[ $# -eq 0 ]]; then
+    exec "${CHEZMOI_BIN}"
+fi
+
+case "${1}" in
+    -h|--help|help|--version|completion|license|upgrade)
+        exec "${CHEZMOI_BIN}" "$@"
+        ;;
+esac
+
+if [[ "${1}" == "-s" ]]; then
+    if [[ $# -lt 2 ]]; then
+        echo 'Missing argument for -s' >&2
+        usage >&2
+        exit 1
+    fi
+    source_arg="${2}"
+    shift 2
+
+    if [[ "${source_arg}" == "all" ]]; then
+        if [[ ${#sources[@]} -eq 0 ]]; then
+            echo 'No sources found' >&2
+            exit 1
+        fi
+        for source in "${sources[@]}"; do
+            source_path="$(create_source_path "${source}")"
+            printf '==> %s\n' "${source}" >&2
+            "${CHEZMOI_BIN}" --source "${source_path}" "$@"
+        done
+        exit 0
+    fi
+
     for source in "${sources[@]}"; do
         if [[ "${source_arg}" == "${source}" ]]; then
             source_path="$(create_source_path "${source}")"
@@ -58,6 +103,11 @@ if [[ "${source_arg:-}" ]]; then
     exit 1
 fi
 
+# Pass through if the caller specified --source / -S explicitly.
+if has_explicit_source_flag "$@"; then
+    exec "${CHEZMOI_BIN}" "$@"
+fi
+
 # Fall back to vanilla chezmoi if default source path exists.
 if [[ -d "${SOURCE_PATH_COMMON}/.git" ]]; then
     exec "${CHEZMOI_BIN}" "$@"
@@ -67,7 +117,7 @@ fi
 pwd="${PWD}"
 for source in "${sources[@]}"; do
     source_path="$(create_source_path "${source}")"
-    if [[ "${pwd}/" = "${source_path}/"* ]]; then
+    if [[ "${pwd}/" == "${source_path}/"* ]]; then
         exec "${CHEZMOI_BIN}" --source "${source_path}" "$@"
     fi
 done
