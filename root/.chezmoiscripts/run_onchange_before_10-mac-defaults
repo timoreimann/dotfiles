@@ -70,17 +70,27 @@ defaults write com.apple.AppleMultitouchTrackpad ForceSuppressed -bool true
 ### Keyboard
 # Use Fn keys as standard function keys
 defaults write -g com.apple.keyboard.fnState -int 1
-# Switch to desktop N via Option+N (seems unreliable)
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 118 "{enabled = 1; value = { parameters = (65535, 18, 262144); type = standard; }; }"
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 119 "{enabled = 1; value = { parameters = (65535, 19, 262144); type = standard; }; }"
-# Disable shortcut for selecting the previous input source
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 "{enabled = 0; value = { parameters = (32, 49, 262144); type = standard; }; }"
-# Disable shortcut for selecting next source in Input menu
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "{enabled = 0; value = { parameters = (32, 49, 786432); type = standard; }; }"
-# Disable shortcut for opening man page in terminal
-defaults write pbs NSServicesStatus -dict-add "com.apple.Terminal - Search man Page Index in Terminal - searchManPages" '{ "enabled_context_menu" = 0; "enabled_services_menu" = 0; "presentation_modes" = { ContextMenu = 0; ServicesMenu = 0; }; }'
-# Disable shortcut for searching man page index in terminal
-defaults write pbs NSServicesStatus -dict-add "com.apple.Terminal - Open man Page in Terminal - openManPage" '{ "enabled_context_menu" = 0; "enabled_services_menu" = 0; "presentation_modes" = { ContextMenu = 0; ServicesMenu = 0; }; }'
+# Set a macOS symbolic hotkey using XML plist types so activateSettings loads it.
+# Arguments: hotkey id, enabled (true|false), char code, key code, modifier flags.
+symbolic_hotkey() {
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "$1" \
+        "<dict><key>enabled</key><$2/><key>value</key><dict><key>parameters</key><array><integer>$3</integer><integer>$4</integer><integer>$5</integer></array><key>type</key><string>standard</string></dict></dict>"
+}
+
+# Switch to Desktop N via Control+N
+symbolic_hotkey 118 true 65535 18 262144
+symbolic_hotkey 119 true 65535 19 262144
+# Disable shortcuts for switching input sources
+symbolic_hotkey 60 false 32 49 262144
+symbolic_hotkey 61 false 32 49 786432
+
+# Disable a macOS Services entry in both context and Services menus.
+disable_service() {
+    defaults write pbs NSServicesStatus -dict-add "$1" \
+        "<dict><key>enabled_context_menu</key><false/><key>enabled_services_menu</key><false/><key>presentation_modes</key><dict><key>ContextMenu</key><false/><key>ServicesMenu</key><false/></dict></dict>"
+}
+disable_service "com.apple.Terminal - Search man Page Index in Terminal - searchManPages"
+disable_service "com.apple.Terminal - Open man Page in Terminal - openManPage"
 
 ### Menu bar icons
 # Always show battery percentage
