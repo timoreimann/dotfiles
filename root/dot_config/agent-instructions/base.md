@@ -144,7 +144,8 @@ When I ask you to change my agent instructions, follow these rules:
 # Tooling and API access
 
 - Use an MCP server to access an API whenever a suitable server exists.
-- For GitHub API interactions, use the configured GitHub MCP server.
+- For GitHub API interactions, use `gh` only. Do not use a GitHub MCP server or `curl`.
+  - Never run `gh auth token`.
 - If an MCP server is not authenticated, do not use another tool to bypass it. Re-authenticate instead.
 - Do not open a browser window without my explicit consent.
 

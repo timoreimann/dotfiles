@@ -18,7 +18,6 @@ Because [chezmoi does not support multiple layered sources](https://github.com/t
 ## Available hooks
 
 - **zsh:** Provide `$HOME/.zshrc.d/<source>/zshrc` (interactive shells) and `$HOME/.zshrc.d/<source>/zshenv` (all shells).
-- **API tokens:** Create the unmanaged file `$HOME/.zshrc.d/secrets`; `~/.zshrc` sources it when it exists.
 - **SSH:** Create files below `$HOME/.ssh/config.d/`.
 - **Git config:** Provide a `modify_derived` template in `.config/git`. Each source owns one marked section of `~/.config/git/derived`, which `~/.gitconfig` includes last.
 - **Global Git ignore:** Provide a `modify_dot_gitignore` template. Each source owns one marked section of `~/.gitignore`.

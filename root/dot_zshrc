@@ -168,12 +168,6 @@ source <(fzf --zsh)
 
 eval "$(starship init zsh)"
 
-# API tokens (unmanaged, mode 0600). It exports GITHUB_PERSONAL_ACCESS_TOKEN,
-# which the GitHub MCP server of omp reads from the environment.
-if [[ -r "${HOME}/.zshrc.d/secrets" ]]; then
-  source "${HOME}/.zshrc.d/secrets"
-fi
-
 # Configuration from derived chezmoi sources, each providing
 # ~/.zshrc.d/<source>/zshrc.
 for f in "${HOME}/.zshrc.d/"*/zshrc(N); do
