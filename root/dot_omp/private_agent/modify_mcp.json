@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# chezmoi modify script for ~/.omp/agent/mcp.json, the global omp MCP server
+# configuration. chezmoi passes the current file on stdin and writes stdout
+# back.
+#
+# omp and derived chezmoi sources also write this file. Keep their servers and
+# settings, and deep-merge the settings below into the file: an object merges
+# key by key, and a scalar or array replaces the current value. Removing a
+# server or setting from this file does not remove it from disk.
+#
+# A default applies only when the file has no value for the setting. omp and a
+# derived source can change a default (for example, enabling chrome-devtools),
+# and chezmoi keeps their value. A derived source can also disable github by
+# setting mcpServers.github.enabled to false, because this script does not set
+# that field.
+set -euo pipefail
+
+defaults=$(cat <<'EOF'
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "enabled": false
+    }
+  }
+}
+EOF
+)
+
+settings=$(cat <<'EOF'
+{
+  "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@1.10.1",
+        "--autoConnect",
+        "--usageStatistics=false",
+        "--performanceCrux=false"
+      ]
+    }
+  }
+}
+EOF
+)
+
+current=$(cat)
+# jq needs a JSON object. A new machine has no file yet.
+if [[ -z "${current//[[:space:]]/}" ]]; then
+  current='{}'
+fi
+# Merge defaults below the current file, and settings above it. Keeping the
+# current file as the left operand preserves existing key order.
+jq \
+  --argjson defaults "${defaults}" \
+  --argjson settings "${settings}" \
+  '(. * ($defaults * .)) * $settings' <<<"${current}"
