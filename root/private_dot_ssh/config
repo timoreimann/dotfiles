@@ -3,10 +3,14 @@ ServerAliveInterval 60
 ServerAliveCountMax 5
 FingerprintHash md5
 
+# Derived chezmoi sources choose the GitHub identity (IdentityFile or
+# IdentityAgent) in their config.d files.
 Host github.com
     User git
-    IdentityFile ~/.ssh/{{- dig "githubKeyName" "github" . }}
     StrictHostKeyChecking yes
+    # chezmoi manages the GitHub host keys, so that a new machine can connect.
+    # ssh adds new keys to the first file only.
+    UserKnownHostsFile ~/.ssh/known_hosts ~/.ssh/known_hosts.d/github.com
 
 # Additional configuration from derived chezmoi sources. "Match all" ends the
 # Host block above, so that the files apply to all hosts.

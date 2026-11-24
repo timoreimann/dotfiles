@@ -57,9 +57,6 @@
 	prune = true
 [branch "master"]
 	rebase = true
-[url "git@github.com:"]
-    	insteadOf = git://github.com/
-    	insteadOf = https://github.com/
 [push]
 	default = current
 	recurseSubmodules = on-demand
@@ -70,3 +67,8 @@
 	submoduleSummary = false
 [init]
 	defaultBranch = main
+# Git configuration from derived chezmoi sources. Each source owns one marked
+# section of the included file. Git ignores the include when the file does not
+# exist. The include comes last, so that its values override the values above.
+[include]
+	path = ~/.config/git/derived
