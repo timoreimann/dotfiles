@@ -29,6 +29,7 @@ Unfortunately, [chezmoi does not intend to support this model](https://github.co
 - add global Git ignore patterns with another `modify_dot_gitignore` template; each source owns one marked section of `~/.gitignore`
 - set omp settings with another `modify_private_config.yml` script in `.omp/agent`; each source deep-merges its settings and keeps the others
 - add agent skills as directories below `$HOME/.agents/skills/`; the public skills that base installs are listed in `root/.chezmoidata/skills.yaml`
+- provide `brew-auth` on `PATH` or at `$HOME/bin/brew-auth` for authenticated Homebrew runs via the shared `brew-bundle` template
 
 Derived sources can call the `section` template in `root/.chezmoitemplates` directly via `joinPath .chezmoi.sourceDir "../../base/root/.chezmoitemplates/section"`.
 
