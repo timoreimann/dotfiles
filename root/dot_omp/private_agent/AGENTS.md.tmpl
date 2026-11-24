@@ -1,3 +1,0 @@
-@~/.config/agent-instructions/base.md
-{{ range $f := glob (joinPath .chezmoi.homeDir ".config/agent-instructions" "*.md") }}{{ if ne (base $f) "base.md" }}
-@{{ $f }}{{ end }}{{ end }}

@@ -13,7 +13,7 @@ When I ask you to change my agent instructions, follow these rules:
 - After the edit, copy the change into the chezmoi source of the file:
   - For `base.md`, run `chezmoi -s base re-add ~/.config/agent-instructions/base.md`.
   - For a source-specific file, run `chezmoi -s <source> re-add ~/.config/agent-instructions/<file>`.
-- Then update the generated copies with `chezmoi -s base apply ~/.codex/AGENTS.md ~/.claude/CLAUDE.md`.
+- Then update the generated copies with `chezmoi -s <source> apply ~/.omp/agent/AGENTS.md ~/.codex/AGENTS.md ~/.claude/CLAUDE.md`, where `<source>` is the source of the edited file.
 - Do not commit the chezmoi change unless I tell you to.
 
 # General

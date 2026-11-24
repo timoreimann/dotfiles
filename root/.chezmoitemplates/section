@@ -1,0 +1,28 @@
+{{- /*
+  Replace the marked section of one chezmoi source in a file that several
+  sources write, and keep the rest of the file. Call it with includeTemplate
+  from a modify template (chezmoi:modify-template). Arguments (dict):
+
+  - stdin: the current file (.chezmoi.stdin)
+  - name: the name of the source
+  - content: the text of the section
+  - comment: the format of a marker line, for example "# %s"
+  - first: put a new section before the current text instead of after it
+
+  A section that exists already stays in its position, so that the order of
+  the sections stays stable.
+*/ -}}
+{{- $begin := printf .comment (printf ">>> chezmoi %s >>>" .name) -}}
+{{- $end := printf .comment (printf "<<< chezmoi %s <<<" .name) -}}
+{{- $section := printf "%s\n%s\n%s\n" $begin (trimSuffix "\n" .content) $end -}}
+{{- $pattern := printf "(?s)%s\n.*?%s\n?" (regexQuoteMeta $begin) (regexQuoteMeta $end) -}}
+{{- $current := .stdin -}}
+{{- if regexMatch $pattern $current -}}
+{{-   regexReplaceAllLiteral $pattern $current $section -}}
+{{- else if .first -}}
+{{-   $section -}}{{- $current -}}
+{{- else -}}
+{{-   $current -}}
+{{-   if and $current (not (hasSuffix "\n" $current)) }}{{ "\n" }}{{ end -}}
+{{-   $section -}}
+{{- end -}}
