@@ -54,7 +54,10 @@ defaults -currentHost write -g com.apple.trackpad.enableSecondaryClick -bool tru
 # Disable natural scrolling
 defaults write -g com.apple.swipescrolldirection -bool false
 # Swipe between pages with two or three fingers
+defaults write -g AppleEnableSwipeNavigateWithScrolls -bool true
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 1
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 1
+defaults -currentHost write -g com.apple.trackpad.threeFingerHorizSwipeGesture -int 1
 # Swipe between full-screen applications: off
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerHorizSwipeGesture -int 0
 # Swipe for notification centre: off
