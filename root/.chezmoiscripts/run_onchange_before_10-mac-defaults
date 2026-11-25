@@ -15,8 +15,8 @@ defaults write -g AppleScrollerPagingBehavior -int 1
 defaults write com.apple.controlcenter 'NSStatusItem Visible Bluetooth' -int 1
 # Show Battery in control centre
 defaults write com.apple.controlcenter 'NSStatusItem Visible Battery' -int 1
-# Show Battery percentage
-defaults write com.apple.menuextra.battery ShowPercent -string YES
+# Show Battery percentage (per-host key of the Control Centre battery module)
+defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool true
 
 # Date: show always
 defaults write com.apple.menuextra.clock ShowDate -int 1
