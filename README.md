@@ -12,7 +12,7 @@ Because [chezmoi does not support multiple layered sources](https://github.com/t
 
 1. Run `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/timoreimann/dotfiles/master/install.sh)"` to install the base source into `$HOME/.local/share/chezmoi/base`. The same command restores a machine whose home directory was wiped.
 1. Start taskbar applications (Rectangle, Clipy) and grant Rectangle the Accessibility permission.
-1. Log out and back in, add EurKEY in keyboard settings (under "other" keyboards), and change keyboard in taskbar icon.
+1. Log out and back in, add EurKEY in keyboard settings (under "English" keyboards), and change keyboard in taskbar icon.
 1. (Optional) Install additional or derived configurations into `$HOME/.local/share/chezmoi/<other>` and hook up as needed.
 
 ## Available hooks

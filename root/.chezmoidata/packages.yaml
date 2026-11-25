@@ -42,7 +42,6 @@ packages:
     - zsh
   casks:
     - clipy
-    - eurkey
     - font-fira-code-nerd-font
     - ghostty
     - rectangle
