@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-set -o errexit
-set -o pipefail
-set -o nounset
-
-DEFAULT_EMAIL_ADDRESS={{ .email | quote }}
+set -euo pipefail
 
 usage() {
   echo "usage: $(basename "$0") [<email address>]" >&2
@@ -15,8 +11,14 @@ case "${1:-}" in
     usage
     exit 1
     ;;
+  "")
+    if ! email_address="$(git config --get user.email)" || [[ -z "${email_address}" ]]; then
+      echo "error: git config user.email is not set" >&2
+      exit 1
+    fi
+    ;;
   *)
-    email_address="${1:-$DEFAULT_EMAIL_ADDRESS}"
+    email_address="$1"
     ;;
 esac
 readonly email_address
