@@ -6,10 +6,33 @@
 #   o <model>/ ...            Fuzzily select model with default thinking
 #   o /<thinking> ...         Pick any model interactively with thinking level
 #   o / ...                   Pick any model interactively with default thinking
+#   o --refresh [...]         Refresh the cached model list before continuing
 
 set -euo pipefail
 
+readonly CACHE_TTL_SEC=3600
+
 main() {
+  local force_refresh=0
+  if [[ $# -gt 0 && "$1" == "--refresh" ]]; then
+    force_refresh=1
+    shift
+  fi
+
+  if [[ "$force_refresh" -eq 1 ]]; then
+    local refreshed_file
+    if ! refreshed_file="$(resolve_cache_file)"; then
+      printf 'o: cannot refresh cache when PI_CODING_AGENT_DIR is set\n' >&2
+      exit 1
+    fi
+    if ! refresh_models_cache "$refreshed_file"; then
+      exit 1
+    fi
+    if [[ $# -eq 0 ]]; then
+      exit 0
+    fi
+  fi
+
   if [[ $# -eq 0 ]]; then
     exec omp
   fi
@@ -30,7 +53,7 @@ main() {
   fi
 
   local selection
-  if selection="$(select_model "$model_query")"; then
+  if selection="$(select_model "$model_query" "$force_refresh")"; then
     :
   else
     exit $?
@@ -68,15 +91,189 @@ validate_global_thinking() {
   return 1
 }
 
-# Resolve model_query against configured omp providers:
-# exact id/selector match, then unique substring match, then fuzzy match via fzf.
+# Resolve model_query against configured omp providers using a cached
+# `omp models --json` snapshot when fresh, refreshing on miss or expiry.
 select_model() {
   local model_query="$1"
+  local already_refreshed="$2"
 
-  local models_json
-  if ! models_json="$(omp models --json)"; then
+  local cache_file=""
+  if cache_file="$(resolve_cache_file)"; then
+    :
+  else
+    cache_file=""
+  fi
+
+  local models_file=""
+  local temp_file=""
+  local used_cache=0
+
+  if [[ -n "$cache_file" ]] && cache_is_fresh "$cache_file"; then
+    models_file="$cache_file"
+    used_cache=1
+  elif [[ -n "$cache_file" ]]; then
+    local refresh_rc=0
+    if refresh_models_cache "$cache_file"; then
+      models_file="$cache_file"
+      already_refreshed=1
+    else
+      refresh_rc=$?
+      if [[ "$refresh_rc" -ne 2 ]]; then
+        return "$refresh_rc"
+      fi
+      temp_file="$(mktemp "${TMPDIR:-/tmp}/o-models.XXXXXX")"
+      if ! fetch_models_json "$temp_file"; then
+        rm -f "$temp_file"
+        return 1
+      fi
+      models_file="$temp_file"
+      already_refreshed=1
+    fi
+  else
+    temp_file="$(mktemp "${TMPDIR:-/tmp}/o-models.XXXXXX")"
+    if ! fetch_models_json "$temp_file"; then
+      rm -f "$temp_file"
+      return 1
+    fi
+    models_file="$temp_file"
+    already_refreshed=1
+  fi
+
+  local selection rc=0
+  if selection="$(match_model_in_file "$model_query" "$models_file" "$used_cache")"; then
+    if [[ -n "$temp_file" ]]; then
+      rm -f "$temp_file"
+    fi
+    printf '%s\n' "$selection"
+    return 0
+  else
+    rc=$?
+  fi
+
+  if [[ -n "$temp_file" ]]; then
+    rm -f "$temp_file"
+  fi
+
+  # Retry once with a fresh catalog if a cached lookup missed or failed to parse.
+  if [[ "$used_cache" -eq 1 && "$already_refreshed" -eq 0 && "$rc" -ne 130 ]]; then
+    if refresh_models_cache "$cache_file"; then
+      if selection="$(match_model_in_file "$model_query" "$cache_file" 0)"; then
+        printf '%s\n' "$selection"
+        return 0
+      else
+        return $?
+      fi
+    fi
+  fi
+
+  return "$rc"
+}
+
+resolve_cache_file() {
+  if [[ -n "${PI_CODING_AGENT_DIR:-}" ]]; then
     return 1
   fi
+
+  local cache_root="${XDG_CACHE_HOME:-${HOME}/.cache}/o"
+  local profile="${OMP_PROFILE:-${PI_PROFILE:-}}"
+  if [[ -n "$profile" ]]; then
+    local safe_profile="${profile//[^A-Za-z0-9._-]/_}"
+    printf '%s/models-%s.json\n' "$cache_root" "$safe_profile"
+  else
+    printf '%s/models.json\n' "$cache_root"
+  fi
+}
+
+cache_is_fresh() {
+  local cache_file="$1"
+  if [[ ! -s "$cache_file" ]]; then
+    return 1
+  fi
+
+  local config_root="${PI_CONFIG_DIR:-${HOME}/.omp}"
+  local agent_dir="${config_root}/agent"
+  local profile="${OMP_PROFILE:-${PI_PROFILE:-}}"
+  if [[ -n "$profile" ]]; then
+    agent_dir="${config_root}/profiles/${profile}/agent"
+  fi
+
+  local cfg
+  for cfg in "${agent_dir}/config.yml" "${agent_dir}/models.yml"; do
+    if [[ -e "$cfg" && "$cfg" -nt "$cache_file" ]]; then
+      return 1
+    fi
+  done
+
+  local mtime now age
+  if ! mtime="$(file_mtime "$cache_file")"; then
+    return 1
+  fi
+  now="$(date +%s)"
+  age=$((now - mtime))
+  if (( age < 0 || age >= CACHE_TTL_SEC )); then
+    return 1
+  fi
+
+  return 0
+}
+
+file_mtime() {
+  local path="$1"
+  local mtime
+  if mtime="$(stat -f %m "$path" 2>/dev/null)"; then
+    printf '%s\n' "$mtime"
+    return 0
+  fi
+  if mtime="$(stat -c %Y "$path" 2>/dev/null)"; then
+    printf '%s\n' "$mtime"
+    return 0
+  fi
+  return 1
+}
+
+refresh_models_cache() {
+  local cache_file="$1"
+  local cache_dir
+  cache_dir="$(dirname "$cache_file")"
+
+  if ! mkdir -p "$cache_dir" 2>/dev/null; then
+    return 2
+  fi
+
+  local tmp_file
+  if ! tmp_file="$(mktemp "${cache_dir}/models.json.XXXXXX" 2>/dev/null)"; then
+    return 2
+  fi
+
+  if ! fetch_models_json "$tmp_file"; then
+    rm -f "$tmp_file"
+    return 1
+  fi
+
+  if ! mv -f "$tmp_file" "$cache_file" 2>/dev/null; then
+    rm -f "$tmp_file"
+    return 2
+  fi
+
+  return 0
+}
+
+fetch_models_json() {
+  local dest_file="$1"
+  if ! omp models --json > "$dest_file"; then
+    return 1
+  fi
+  if ! jq -e '.models | type == "array"' "$dest_file" >/dev/null 2>&1; then
+    return 1
+  fi
+  return 0
+}
+
+# Exact id/selector match, then unique substring match, then fuzzy match via fzf.
+match_model_in_file() {
+  local model_query="$1"
+  local models_file="$2"
+  local quiet_no_match="$3"
 
   # Format every model as: id, name, display_thinking, provider, selector, allowed_thinking.
   # shellcheck disable=SC2016
@@ -95,7 +292,7 @@ select_model() {
 
   if [[ -n "$model_query" ]]; then
     local direct_match
-    if ! direct_match="$(printf '%s\n' "$models_json" | jq -r --arg q "$model_query" "
+    if ! direct_match="$(jq -r --arg q "$model_query" "
       (\$q | ascii_downcase) as \$ql
       | ([.models[] | select((.id | ascii_downcase) == \$ql or (.selector | ascii_downcase) == \$ql)]) as \$exact
       | if (\$exact | length) == 1 then
@@ -112,8 +309,8 @@ select_model() {
               empty
             end
         end
-    ")"; then
-      return 1
+    " "$models_file")"; then
+      return 2
     fi
 
     if [[ -n "$direct_match" ]]; then
@@ -123,12 +320,14 @@ select_model() {
   fi
 
   local model_rows
-  if ! model_rows="$(printf '%s\n' "$models_json" | jq -r ".models[] | $row_expr")"; then
-    return 1
+  if ! model_rows="$(jq -r ".models[] | $row_expr" "$models_file")"; then
+    return 2
   fi
 
   if [[ -z "$model_rows" ]]; then
-    printf 'o: no models available (run "omp models" to inspect)\n' >&2
+    if [[ "$quiet_no_match" -eq 0 ]]; then
+      printf 'o: no models available (run "omp models" to inspect)\n' >&2
+    fi
     return 1
   fi
 
@@ -153,7 +352,7 @@ select_model() {
     return 0
   else
     local rc=$?
-    if [[ "$rc" -eq 1 ]]; then
+    if [[ "$rc" -eq 1 && "$quiet_no_match" -eq 0 ]]; then
       printf 'o: no model matching "%s"\n' "$model_query" >&2
     fi
     return "$rc"
